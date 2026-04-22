@@ -1,61 +1,32 @@
-import { useNavigate } from 'react-router-dom';
 import { useAuthStore } from '../store/authStore';
 
 export default function Dashboard() {
-  const navigate = useNavigate();
-  // Mengambil data user dan fungsi logout dari store
-  const { user, logout } = useAuthStore();
-
-  const handleLogout = () => {
-    logout();
-    navigate('/login');
-  };
-
-  // Proteksi sederhana: Jika belum login, jangan tampilkan apa-apa
-  if (!user) {
-    return <div className="p-10 text-center">Akses Ditolak. Silakan Login terlebih dahulu.</div>;
-  }
+  const { user } = useAuthStore();
 
   return (
-    <div className="min-h-screen bg-gray-100 p-8">
-      <div className="max-w-4xl mx-auto bg-white p-6 rounded-xl shadow-md">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold text-gray-800">HRIS Dashboard</h2>
-          <button 
-            onClick={handleLogout}
-            className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
-          >
-            Logout
-          </button>
-        </div>
-        
-        <div className="bg-blue-50 border border-blue-200 text-blue-800 p-4 rounded-lg mb-6">
-          <p>Selamat datang, <strong>{user.name}</strong>!</p>
-          <p>Role Anda saat ini adalah: <span className="uppercase font-bold">{user.role}</span></p>
-        </div>
+    <div className="space-y-6">
+      <h2 className="text-2xl font-bold text-gray-800">Ringkasan Dashboard</h2>
+      
+      <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <p className="text-gray-600">
+          Selamat datang kembali, <span className="font-semibold text-blue-600">{user?.name}</span>!
+        </p>
+        <p className="text-sm text-gray-500 mt-1">Gunakan menu di sebelah kiri untuk menavigasi sistem HRIS.</p>
+      </div>
 
-        {/* Contoh Rendering Berbasis Role */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="border p-4 rounded-lg shadow-sm">
-            <h3 className="font-semibold text-lg mb-2">Menu Staff Umum</h3>
-            <ul className="list-disc pl-5 space-y-1 text-blue-600">
-              <li><a href="#">Absensi / Attendance</a></li>
-              <li><a href="#">Pengajuan Cuti</a></li>
-              <li><a href="#">Pengajuan Reimburse</a></li>
-            </ul>
-          </div>
-
-          {/* Kolom ini HANYA muncul jika role-nya admin */}
-          {user.role === 'admin' && (
-            <div className="border p-4 rounded-lg shadow-sm bg-orange-50 border-orange-200">
-              <h3 className="font-semibold text-lg text-orange-800 mb-2">Panel Admin Utama</h3>
-              <ul className="list-disc pl-5 space-y-1 text-orange-600">
-                <li><a href="#">User Management</a></li>
-                <li><a href="#">Approval Cuti & Reimburse</a></li>
-                <li><a href="#">Hitung Payroll</a></li>
-              </ul>
-            </div>
-          )}
+      {/* Grid kartu ringkasan (dummy) */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-blue-500">
+          <h3 className="text-gray-500 text-sm font-medium">Sisa Cuti Tahunan</h3>
+          <p className="text-3xl font-bold text-gray-800 mt-2">12 <span className="text-lg text-gray-500 font-normal">Hari</span></p>
+        </div>
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-green-500">
+          <h3 className="text-gray-500 text-sm font-medium">Status Kehadiran Hari Ini</h3>
+          <p className="text-xl font-bold text-green-600 mt-2">Hadir (08:05 WIB)</p>
+        </div>
+        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 border-l-4 border-l-orange-500">
+          <h3 className="text-gray-500 text-sm font-medium">Reimburse Pending</h3>
+          <p className="text-3xl font-bold text-gray-800 mt-2">1 <span className="text-lg text-gray-500 font-normal">Pengajuan</span></p>
         </div>
       </div>
     </div>
