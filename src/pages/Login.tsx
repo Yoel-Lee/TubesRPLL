@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuthStore } from '../store/authStore';
 
 export default function Login() {
   const [email, setEmail] = useState<string>('');
@@ -7,16 +8,24 @@ export default function Login() {
   const [isLoading, setIsLoading] = useState<boolean>(false);
   
   const navigate = useNavigate();
+  const login = useAuthStore((state) => state.login);
 
   const handleLogin = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setIsLoading(true);
     
-    // Simulasi loading API selama 1 detik biar terasa real
     setTimeout(() => {
-      console.log("Login dengan:", email, password);
+      
+      const dummyUser = {
+        id: 1,
+        name: email === 'admin@perusahaan.com' ? 'Pak Bos Admin' : 'Staf Biasa',
+        email: email,
+        role: email === 'admin@perusahaan.com' ? 'admin' : 'staff' as 'admin' | 'staff',
+      };
+
+      login(dummyUser); // Simpan data user ke State Management global
       setIsLoading(false);
-      navigate('/dashboard');
+      navigate('/dashboard'); // Pindah ke dashboard
     }, 1000);
   };
 
