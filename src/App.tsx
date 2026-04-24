@@ -7,7 +7,7 @@ import Leave from './pages/Leave';
 import Users from './pages/Users';
 import Reimburse from './pages/Reimburse';
 import Payroll from './pages/Payroll';
-
+import Attendance from './pages/Attendance';
 
 function App() {
   return (
@@ -24,7 +24,7 @@ function App() {
             <Route path="/dashboard" element={<Dashboard />} />
             
             {/* Siapkan tempat untuk halaman lainnya nanti */}
-            <Route path="/attendance" element={<div>Halaman Attendance (QR) akan di sini</div>} />
+            <Route path="/attendance" element={<Attendance />} />
             <Route path="/leave" element={<Leave />} />
             <Route path="/users" element={<Users />} />
            <Route path="/reimburse" element={<Reimburse />} />
