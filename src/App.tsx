@@ -4,6 +4,10 @@ import Dashboard from './pages/Dashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import MainLayout from './components/MainLayout';
 import Leave from './pages/Leave';
+import Users from './pages/Users';
+import Reimburse from './pages/Reimburse';
+import Payroll from './pages/Payroll';
+
 
 function App() {
   return (
@@ -22,9 +26,9 @@ function App() {
             {/* Siapkan tempat untuk halaman lainnya nanti */}
             <Route path="/attendance" element={<div>Halaman Attendance (QR) akan di sini</div>} />
             <Route path="/leave" element={<Leave />} />
-            <Route path="/reimburse" element={<div>Halaman Reimburse akan di sini</div>} />
-            <Route path="/users" element={<div>Halaman User Management akan di sini</div>} />
-            <Route path="/payroll" element={<div>Halaman Payroll akan di sini</div>} />
+            <Route path="/users" element={<Users />} />
+           <Route path="/reimburse" element={<Reimburse />} />
+          <Route path="/payroll" element={<Payroll />} />
           </Route>
         </Route>
         
