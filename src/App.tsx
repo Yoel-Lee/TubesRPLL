@@ -3,6 +3,7 @@ import Login from './pages/Login';
 import Dashboard from './pages/Dashboard';
 import ProtectedRoute from './components/ProtectedRoute';
 import MainLayout from './components/MainLayout';
+import Leave from './pages/Leave';
 
 function App() {
   return (
@@ -20,7 +21,7 @@ function App() {
             
             {/* Siapkan tempat untuk halaman lainnya nanti */}
             <Route path="/attendance" element={<div>Halaman Attendance (QR) akan di sini</div>} />
-            <Route path="/leave" element={<div>Halaman Cuti akan di sini</div>} />
+            <Route path="/leave" element={<Leave />} />
             <Route path="/reimburse" element={<div>Halaman Reimburse akan di sini</div>} />
             <Route path="/users" element={<div>Halaman User Management akan di sini</div>} />
             <Route path="/payroll" element={<div>Halaman Payroll akan di sini</div>} />
