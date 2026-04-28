@@ -1,0 +1,85 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+
+
+// eNUM
+enum Role {
+  ADMIN
+  STAFF
+}
+
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+}
+
+
+enum RequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+
+enum AttendanceType {
+  IN
+  OUT
+}
+
+// ========================== MODELS  ==========================
+
+model User {
+  id             Int             @id @default(autoincrement())
+  name           String
+  email          String          @unique
+  password       String
+  role           Role            @default(STAFF)
+  status         UserStatus      @default(ACTIVE)
+  createdAt      DateTime        @default(now())
+  
+  // Relasi Hierarki Manajer
+  managerId      Int?
+  manager        User?           @relation("UserManager", fields: [managerId], references: [id])
+  staffs         User[]          @relation("UserManager")
+
+  // Relasi Data
+  leaves         Leave[]
+  reimbursements Reimbursement[]
+  attendances    Attendance[]
+}
+
+model Leave {
+  id        Int           @id @default(autoincrement())
+  startDate DateTime
+  endDate   DateTime
+  reason    String
+  status    RequestStatus @default(PENDING)
+  userId    Int
+  user      User          @relation(fields: [userId], references: [id])
+}
+
+model Reimbursement {
+  id          Int           @id @default(autoincrement())
+  date        DateTime
+  description String
+  amount      Float
+  status      RequestStatus @default(PENDING)
+  userId      Int
+  user        User          @relation(fields: [userId], references: [id])
+}
+
+model Attendance {
+  id     Int            @id @default(autoincrement())
+  time   DateTime       @default(now())
+  type   AttendanceType
+  userId Int
+  user   User           @relation(fields: [userId], references: [id])
+}
