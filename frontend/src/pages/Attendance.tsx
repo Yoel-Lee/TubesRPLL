@@ -1,7 +1,5 @@
 import { useState } from 'react';
-import { Scanner } from '@yudiel/react-qr-scanner';
-
-// Tipe data untuk log presensi
+import { Scanner } from '@yudiel/react-qr-scanner'; // Tipe data untuk log presensi
 interface AttendanceLog {
   id: number;
   time: string;
