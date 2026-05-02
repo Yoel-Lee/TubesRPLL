@@ -48,6 +48,9 @@ export default function DashboardLayout() {
               <Link to="/manage-attendance" className="flex items-center gap-3 hover:text-indigo-300 transition">
                 <Calendar size={20} /> Koreksi Absen
               </Link>
+              <Link to="/manage-staff" className="flex items-center gap-3 hover:text-indigo-300 transition">
+                <Calendar size={20} /> Manage Staff
+              </Link>
             </>
           )}
         </nav>

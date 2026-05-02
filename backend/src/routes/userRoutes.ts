@@ -20,5 +20,7 @@ router.get('/:id', verifyToken, getUserProfile);
 // Admin juga bisa mengedit profil siapapun lewat sini
 router.put('/:id', verifyToken, updateUserProfile);
 
+router.post('/register', registerStaff);
+
 
 export default router;

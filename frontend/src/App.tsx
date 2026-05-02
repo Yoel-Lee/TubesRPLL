@@ -10,6 +10,8 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import ManageAttendance from './pages/ManageAttendance';
 import Profile from './pages/Profile';
+import RegisterStaff from './pages/RegisterStaff';
+import ManageStaff from './pages/ManageStaff';
 
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const isAuthenticated = !!localStorage.getItem('token');
@@ -25,6 +27,7 @@ function App() {
         {/* Rute Publik */}
         <Route path="/login" element={<Login />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password/:token" element={<ResetPassword />} />
 
         {/* Rute Terproteksi */}
         <Route
@@ -47,6 +50,8 @@ function App() {
           <Route path="approvals" element={<AdminApprovals />} />
           <Route path="payroll" element={<Payroll />} />
           <Route path="manage-attendance" element={<ManageAttendance />} />
+          <Route path="manage-staff" element={<ManageStaff />} />          
+          <Route path="register-staff" element={<RegisterStaff />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

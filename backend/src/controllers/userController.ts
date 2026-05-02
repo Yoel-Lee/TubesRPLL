@@ -4,16 +4,37 @@ import bcrypt from 'bcrypt';
 import { type AuthRequest } from '../middleware/auth.js';
 
 // 1. Register Staff (Oleh Admin)
+// 1. Register Staff (Oleh Admin) - VERSI UPDATE
 export const registerStaff = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
-    const { name, email, password, role, managerId } = req.body;
+    const { name, email, password, role, managerId, baseSalary, phoneNumber, address } = req.body;
+    
+    // Validasi domain email (tambahan proteksi di backend)
+    if (!email.endsWith('@gmail.com')) {
+      return res.status(400).json({ error: "Hanya email @gmail.com yang diperbolehkan." });
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
     
     const newUser = await prisma.user.create({
-      data: { name, email, password: hashedPassword, role, managerId }
+      data: { 
+        name, 
+        email, 
+        password: hashedPassword, 
+        role, 
+        managerId: managerId ? Number(managerId) : null,
+        baseSalary: Number(baseSalary) || 0, 
+        phoneNumber, 
+        address     
+      }
     });
+
     res.status(201).json({ message: "Staff berhasil dibuat", data: newUser });
-  } catch (error) {
+  } catch (error: any) {
+    // Cek jika email duplikat
+    if (error.code === 'P2002') {
+      return res.status(400).json({ error: "Email sudah terdaftar." });
+    }
     res.status(500).json({ error: String(error) });
   }
 };

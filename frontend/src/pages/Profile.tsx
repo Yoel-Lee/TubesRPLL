@@ -1,14 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import { User, Mail, Shield, Save, Edit3, Users, ChevronRight, Phone, MapPin } from 'lucide-react';
+import { useState, useEffect } from 'react';
+import {Mail, Shield, Save, Edit3, Phone, MapPin } from 'lucide-react';
 import api from '../lib/api';
 
 export default function Profile() {
   const currentUser = JSON.parse(localStorage.getItem('user') || '{}');
   const [profile, setProfile] = useState<any>(null);
-  const [allUsers, setAllUsers] = useState([]);
   const [isEditing, setIsEditing] = useState(false);
   
-  // Update Initial State dengan phoneNumber dan address
   const [formData, setFormData] = useState({ 
     name: '', 
     role: '', 
@@ -17,33 +15,25 @@ export default function Profile() {
     managerId: '' 
   });
 
- const fetchProfile = async () => {
-  try {
-    const { data } = await api.get(`/users/${currentUser.id}`);
-    setProfile(data);
+  const fetchProfile = async () => {
+    try {
+      const { data } = await api.get(`/users/${currentUser.id}`);
+      setProfile(data);
 
-    setFormData({
-      name: data.name || '',
-      role: data.role || '',
-      phoneNumber: data.phoneNumber || '',
-      address: data.address || '',
-      managerId: data.managerId || ''
-    });
-  } catch (err) {
-    console.error(err);
-  }
-};
-
-  const fetchAllUsers = async () => {
-    if (currentUser.role === 'ADMIN') {
-      const { data } = await api.get('/users');
-      setAllUsers(data);
+      setFormData({
+        name: data.name || '',
+        role: data.role || '',
+        phoneNumber: data.phoneNumber || '',
+        address: data.address || '',
+        managerId: data.managerId || ''
+      });
+    } catch (err) {
+      console.error(err);
     }
   };
 
   useEffect(() => {
     fetchProfile();
-    fetchAllUsers();
   }, []);
 
   const handleUpdate = async () => {
@@ -155,75 +145,6 @@ export default function Profile() {
           </div>
         </div>
       </div>
-
-      {/* SECTION 2: ADMIN USER MANAGEMENT */}
-      {currentUser.role === 'ADMIN' && (
-        <div className="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-          <div className="p-6 border-b border-gray-50 flex items-center justify-between bg-gray-50/50">
-            <div className="flex items-center gap-3">
-              <div className="p-2 bg-indigo-600 text-white rounded-xl shadow-md"><Users size={20}/></div>
-              <h3 className="text-xl font-bold text-gray-800">Manajemen Pegawai</h3>
-            </div>
-            <span className="bg-white border border-gray-200 text-gray-600 px-4 py-1.5 rounded-xl text-xs font-black tracking-tight">
-              {allUsers.length} TOTAL PEGAWAI
-            </span>
-          </div>
-
-          <div className="overflow-x-auto">
-            <table className="w-full text-left">
-              <thead className="bg-gray-50 text-gray-400 text-[10px] uppercase tracking-[0.15em] font-black">
-                <tr>
-                  <th className="px-8 py-5">Informasi Pegawai</th>
-                  <th className="px-8 py-5">Role</th>
-                  <th className="px-8 py-5">Manager</th>
-                  <th className="px-8 py-5 text-center">Detail</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-gray-100">
-                {allUsers.map((u: any) => (
-                  <tr key={u.id} className="hover:bg-indigo-50/30 transition-all group">
-                    <td className="px-8 py-4">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-white border border-gray-200 text-indigo-600 rounded-xl flex items-center justify-center font-black text-sm shadow-sm group-hover:border-indigo-200">
-                          {u.name.charAt(0)}
-                        </div>
-                        <div>
-                          <p className="text-sm font-black text-gray-800">{u.name}</p>
-                          <p className="text-[11px] text-gray-400 font-medium tracking-tight">{u.email}</p>
-                        </div>
-                      </div>
-                    </td>
-                    <td className="px-8 py-4">
-                      <span className={`px-3 py-1 rounded-lg text-[10px] font-black tracking-wider border ${
-                        u.role === 'ADMIN' 
-                        ? 'bg-purple-50 text-purple-600 border-purple-100' 
-                        : 'bg-blue-50 text-blue-600 border-blue-100'
-                      }`}>
-                        {u.role}
-                      </span>
-                    </td>
-                    <td className="px-8 py-4 text-xs font-bold text-gray-500">
-                      {u.manager?.name ? (
-                        <span className="flex items-center gap-1.5">
-                            <div className="w-1.5 h-1.5 rounded-full bg-green-500"></div>
-                            {u.manager.name}
-                        </span>
-                      ) : (
-                        <span className="text-gray-300 font-normal italic">No Manager</span>
-                      )}
-                    </td>
-                    <td className="px-8 py-4 text-center">
-                      <button className="p-2 text-gray-300 hover:text-indigo-600 hover:bg-white rounded-xl transition-all shadow-none hover:shadow-sm">
-                        <ChevronRight size={20} />
-                      </button>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
