@@ -11,6 +11,7 @@ export interface AuthRequest extends Request {
 
 // 1. Middleware untuk mengecek apakah user bawa Token (Sudah Login)
 export const verifyToken = (req: AuthRequest, res: Response, next: NextFunction): any => {
+   console.log('AUTH HEADER:', req.headers.authorization);
   const authHeader = req.headers.authorization;
   
   if (!authHeader || !authHeader.startsWith('Bearer ')) {

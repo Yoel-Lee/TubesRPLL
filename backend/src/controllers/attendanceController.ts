@@ -38,3 +38,22 @@ export const getHistory = async (req: AuthRequest, res: Response): Promise<any> 
     res.status(500).json({ error: String(error) });
   }
 };
+
+export const updateAttendance = async (req: AuthRequest, res: Response): Promise<any> => {
+  try {
+    const { id } = req.params;
+    const { time, type } = req.body;
+
+    const updated = await prisma.attendance.update({
+      where: { id: Number(id) },
+      data: {
+        time: new Date(time),
+        type: type
+      }
+    });
+
+    res.json({ message: "Absen berhasil dikoreksi", updated });
+  } catch (error) {
+    res.status(500).json({ error: "Gagal mengupdate absen" });
+  }
+};

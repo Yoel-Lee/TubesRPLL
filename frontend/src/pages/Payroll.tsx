@@ -1,97 +1,144 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { DollarSign, User as UserIcon, Calculator, AlertCircle, Receipt } from 'lucide-react';
+import api from '../lib/api';
 
 interface PayrollData {
-  id: number;
-  employeeName: string;
-  role: string;
-  baseSalary: number;
-  allowance: number;
-  deduction: number;
-  status: 'paid' | 'unpaid';
+  employee: string;
+  month: number;
+  year: number;
+  details: {
+    baseSalary: number;
+    totalReimburse: number;
+    totalLatePenalty: number;
+    totalLateRecords: number;
+    grandTotal: number;
+  };
 }
 
 export default function Payroll() {
-  const [payrolls] = useState<PayrollData[]>([
-    { id: 1, employeeName: 'Pak Bos Admin', role: 'admin', baseSalary: 15000000, allowance: 2000000, deduction: 500000, status: 'paid' },
-    { id: 2, employeeName: 'Budi Santoso', role: 'staff', baseSalary: 8000000, allowance: 1000000, deduction: 200000, status: 'unpaid' },
-    { id: 3, employeeName: 'Siti Aminah', role: 'staff', baseSalary: 7500000, allowance: 1000000, deduction: 150000, status: 'unpaid' },
-  ]);
+  const [users, setUsers] = useState<any[]>([]);
+  const [selectedUser, setSelectedUser] = useState('');
+  const [month, setMonth] = useState(new Date().getMonth() + 1);
+  const [payroll, setPayroll] = useState<PayrollData | null>(null);
+  const [loading, setLoading] = useState(false);
 
-  const formatRupiah = (angka: number) => {
-    return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(angka);
+  // Ambil daftar user untuk dropdown
+  useEffect(() => {
+    const fetchUsers = async () => {
+      const { data } = await api.get('/users');
+      setUsers(data);
+    };
+    fetchUsers();
+  }, []);
+
+  const handleCalculate = async () => {
+    if (!selectedUser) return alert("Pilih pegawai terlebih dahulu");
+    setLoading(true);
+    try {
+      const { data } = await api.post('/payroll/calculate', {
+        userId: selectedUser,
+        month: Number(month),
+        year: 2026 // Bisa dibuat dinamis
+      });
+      setPayroll(data);
+    } catch (err) {
+      alert("Gagal menghitung payroll");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h2 className="text-2xl font-bold text-gray-800">Manajemen Payroll</h2>
-        <button className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
-          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
-          Proses Semua Gaji
-        </button>
+    <div className="space-y-8">
+      {/* Selector Section */}
+      <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
+        <div className="flex items-center gap-2 mb-6 text-indigo-900">
+          <Calculator size={24} />
+          <h3 className="text-lg font-bold">Kalkulator Gaji Pegawai</h3>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Pilih Pegawai</label>
+            <select 
+              className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-indigo-500"
+              value={selectedUser}
+              onChange={(e) => setSelectedUser(e.target.value)}
+            >
+              <option value="">-- Pilih Nama --</option>
+              {users.map(u => <option key={u.id} value={u.id}>{u.name} ({u.role})</option>)}
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">Bulan</label>
+            <select 
+              className="w-full p-3 border rounded-xl outline-none"
+              value={month}
+              onChange={(e) => setMonth(Number(e.target.value))}
+            >
+              {[...Array(12)].map((_, i) => (
+                <option key={i+1} value={i+1}>Bulan ke-{i+1}</option>
+              ))}
+            </select>
+          </div>
+          <button 
+            onClick={handleCalculate}
+            disabled={loading}
+            className="bg-indigo-600 text-white py-3 rounded-xl font-bold hover:bg-indigo-700 transition disabled:bg-gray-400"
+          >
+            {loading ? 'Menghitung...' : 'Generate Payroll'}
+          </button>
+        </div>
       </div>
 
-      {/* Summary Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-          <p className="text-gray-500 text-sm font-medium mb-1">Total Beban Gaji Bulan Ini</p>
-          <p className="text-2xl font-bold text-gray-800">{formatRupiah(34800000)}</p>
-        </div>
-        <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-          <p className="text-gray-500 text-sm font-medium mb-1">Sudah Dibayar</p>
-          <p className="text-2xl font-bold text-green-600">1 <span className="text-sm font-normal text-gray-500">Karyawan</span></p>
-        </div>
-        <div className="bg-white p-5 rounded-xl shadow-sm border border-gray-100">
-          <p className="text-gray-500 text-sm font-medium mb-1">Belum Dibayar</p>
-          <p className="text-2xl font-bold text-orange-600">2 <span className="text-sm font-normal text-gray-500">Karyawan</span></p>
-        </div>
-      </div>
+      {/* Slip Gaji Result */}
+      {payroll && (
+        <div className="bg-white rounded-2xl shadow-lg border-2 border-indigo-50 overflow-hidden max-w-2xl mx-auto">
+          <div className="bg-indigo-900 p-6 text-white flex justify-between items-center">
+            <div>
+              <h4 className="text-xl font-bold">SLIP GAJI DIGITAL</h4>
+              <p className="opacity-70 text-sm">Periode: {payroll.month} / {payroll.year}</p>
+            </div>
+            <Receipt size={40} className="opacity-20" />
+          </div>
 
-      {/* Tabel Data Gaji */}
-      <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left border-collapse">
-            <thead>
-              <tr className="bg-gray-50 text-gray-600 text-sm border-b">
-                <th className="p-4 font-medium">Karyawan</th>
-                <th className="p-4 font-medium">Gaji Pokok</th>
-                <th className="p-4 font-medium">Tunjangan</th>
-                <th className="p-4 font-medium">Potongan</th>
-                <th className="p-4 font-medium text-blue-700">Total Diterima (Nett)</th>
-                <th className="p-4 font-medium">Status</th>
-                <th className="p-4 font-medium text-center">Aksi</th>
-              </tr>
-            </thead>
-            <tbody className="text-sm">
-              {payrolls.map((pr) => {
-                const netSalary = pr.baseSalary + pr.allowance - pr.deduction;
-                return (
-                  <tr key={pr.id} className="hover:bg-gray-50 border-b last:border-0">
-                    <td className="p-4">
-                      <p className="font-bold text-gray-800">{pr.employeeName}</p>
-                      <p className="text-xs text-gray-500 uppercase">{pr.role}</p>
-                    </td>
-                    <td className="p-4 text-gray-600">{formatRupiah(pr.baseSalary)}</td>
-                    <td className="p-4 text-green-600">+{formatRupiah(pr.allowance)}</td>
-                    <td className="p-4 text-red-500">-{formatRupiah(pr.deduction)}</td>
-                    <td className="p-4 font-bold text-gray-900">{formatRupiah(netSalary)}</td>
-                    <td className="p-4">
-                      <span className={`px-2 py-1 rounded-full text-xs font-semibold ${pr.status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>
-                        {pr.status === 'paid' ? 'Lunas' : 'Belum Dibayar'}
-                      </span>
-                    </td>
-                    <td className="p-4 text-center">
-                      <button className="text-blue-600 hover:text-blue-800 font-medium text-xs border border-blue-200 px-3 py-1 rounded hover:bg-blue-50 transition-colors">
-                        Slip Gaji
-                      </button>
-                    </td>
-                  </tr>
-                );
-              })}
-            </tbody>
-          </table>
+          <div className="p-8 space-y-6">
+            <div className="flex justify-between border-b pb-4">
+              <span className="text-gray-500">Nama Pegawai</span>
+              <span className="font-bold text-gray-800">{payroll.employee}</span>
+            </div>
+
+            <div className="space-y-3">
+              <div className="flex justify-between">
+                <span>Gaji Pokok</span>
+                <span className="font-medium">Rp {payroll.details.baseSalary.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between text-green-600">
+                <span>Insentif (Reimburse)</span>
+                <span className="font-medium">+ Rp {payroll.details.totalReimburse.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between text-red-600">
+                <span className="flex items-center gap-1">
+                  Potongan Telat ({payroll.details.totalLateRecords}x)
+                  <AlertCircle size={14} />
+                </span>
+                <span className="font-medium">- Rp {payroll.details.totalLatePenalty.toLocaleString()}</span>
+              </div>
+            </div>
+
+            <div className="pt-6 border-t-2 border-dashed flex justify-between items-center">
+              <span className="text-lg font-bold text-gray-700">Total Gaji Bersih</span>
+              <span className="text-2xl font-black text-indigo-600">
+                Rp {payroll.details.grandTotal.toLocaleString()}
+              </span>
+            </div>
+          </div>
+
+          <div className="bg-gray-50 p-4 text-center text-xs text-gray-400">
+            Dihasilkan secara otomatis oleh ITHB HRIS System
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

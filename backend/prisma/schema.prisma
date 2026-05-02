@@ -44,7 +44,11 @@ model User {
   role           Role            @default(STAFF)
   status         UserStatus      @default(ACTIVE)
   createdAt      DateTime        @default(now())
-  
+  baseSalary     Float           @default(0)
+  phoneNumber    String?         // Tambahkan ini
+  address        String?
+
+
   // Relasi Hierarki Manajer
   managerId      Int?
   manager        User?           @relation("UserManager", fields: [managerId], references: [id])

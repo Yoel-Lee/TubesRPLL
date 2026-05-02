@@ -1,42 +1,57 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
-import ProtectedRoute from './components/ProtectedRoute';
-import MainLayout from './components/MainLayout';
-import Leave from './pages/Leave';
-import Users from './pages/Users';
-import Reimburse from './pages/Reimburse';
-import Payroll from './pages/Payroll';
+import DashboardLayout from './layouts/DashboardLayout';
 import Attendance from './pages/Attendance';
+import LeaveRequest from './pages/LeaveRequest';
+import Payroll from './pages/Payroll';
+import Reimbursement from './pages/Reimbursement';
+import AdminApprovals from './pages/AdminApprovals';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
+import ManageAttendance from './pages/ManageAttendance';
+import Profile from './pages/Profile';
+
+const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
+  const isAuthenticated = !!localStorage.getItem('token');
+  return isAuthenticated ? <>{children}</> : <Navigate to="/login" />;
+};
+
+
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-      
+        {/* Rute Publik */}
         <Route path="/login" element={<Login />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
 
-        {/* parent terbesar -> cek dulu udah login apa belom */}
-        <Route element={<ProtectedRoute />}>
-          {/*kalo ud login , mainlayout disini sebagai parent route juga, biar anak dibawahnya ke load semua komponen sidebar / header nya */}
-          <Route element={<MainLayout />}>
-            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-            <Route path="/dashboard" element={<Dashboard />} />
-            
-            {/* Siapkan tempat untuk halaman lainnya nanti */}
-            <Route path="/attendance" element={<Attendance />} />
-            <Route path="/leave" element={<Leave />} />
-            <Route path="/users" element={<Users />} />
-           <Route path="/reimburse" element={<Reimburse />} />
-          <Route path="/payroll" element={<Payroll />} />
-          </Route>
+        {/* Rute Terproteksi */}
+        <Route
+          path="/"
+          element={
+            <PrivateRoute>
+              <DashboardLayout />
+            </PrivateRoute>
+          }
+        >
+          <Route index element={<Navigate to="/attendance" replace />} />
+          <Route path="attendance" element={<Attendance />} />
+          <Route path="leave" element={<LeaveRequest />} />
+          <Route path="reimburse" element={<Reimbursement />} />
+          
+          {/* 2. TAMBAHKAN RUTE PROFILE DI SINI */}
+          <Route path="profile" element={<Profile />} />
+
+          {/* Rute Khusus Admin */}
+          <Route path="approvals" element={<AdminApprovals />} />
+          <Route path="payroll" element={<Payroll />} />
+          <Route path="manage-attendance" element={<ManageAttendance />} />
         </Route>
-        
-        {/* URL ga valid */}
-        <Route path="*" element={<Navigate to="/dashboard" replace />} />
+
+        <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
     </BrowserRouter>
   );
 }
-
 export default App;
