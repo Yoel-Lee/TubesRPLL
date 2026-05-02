@@ -1,8 +1,10 @@
 import { useState } from 'react';
-import { UserPlus, Mail, Lock, User, Wallet, Phone, MapPin, CheckCircle2 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { UserPlus, Mail, Lock, User, Wallet, Phone, MapPin, CheckCircle2, ArrowLeft } from 'lucide-react';
 import api from '../lib/api';
 
 export default function RegisterStaff() {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -54,6 +56,9 @@ export default function RegisterStaff() {
                     phoneNumber: '',
                     address: ''
                 });
+                
+                // Opsional: Langsung kembali ke halaman manage staff setelah berhasil
+                navigate('/manage-staff'); 
             }
         } catch (err: any) {
             const errorMessage = err.response?.data?.error || "Gagal mendaftarkan staff";
@@ -62,14 +67,23 @@ export default function RegisterStaff() {
     };
 
     return (
-        <div className="max-w-2xl mx-auto space-y-6">
-            <div className="flex items-center gap-3">
-                <div className="bg-indigo-100 p-3 rounded-2xl text-indigo-600">
-                    <UserPlus size={24} />
-                </div>
-                <div>
-                    <h2 className="text-2xl font-bold text-gray-800">Daftarkan Staff Baru</h2>
-                    <p className="text-gray-500 text-sm">Tambahkan anggota tim baru ke dalam sistem HRIS.</p>
+        <div className="max-w-2xl mx-auto space-y-6 animate-slide-up">
+            {/* Bagian Header dengan Tombol Back */}
+            <div className="flex items-center gap-4">
+                <button 
+                    onClick={() => navigate('/manage-staff')}
+                    className="p-2 bg-white rounded-xl shadow-sm text-gray-400 hover:text-indigo-600 transition-all"
+                >
+                    <ArrowLeft size={24} />
+                </button>
+                <div className="flex items-center gap-3">
+                    <div className="bg-indigo-100 p-2.5 rounded-xl text-indigo-600">
+                        <UserPlus size={22} />
+                    </div>
+                    <div>
+                        <h2 className="text-2xl font-bold text-gray-800">Daftarkan Staff Baru</h2>
+                        <p className="text-gray-500 text-sm">Tambahkan anggota tim baru ke dalam sistem HRIS.</p>
+                    </div>
                 </div>
             </div>
 

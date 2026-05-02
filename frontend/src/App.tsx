@@ -12,6 +12,7 @@ import ManageAttendance from './pages/ManageAttendance';
 import Profile from './pages/Profile';
 import RegisterStaff from './pages/RegisterStaff';
 import ManageStaff from './pages/ManageStaff';
+import EditStaff from './pages/EditStaff';
 
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const isAuthenticated = !!localStorage.getItem('token');
@@ -52,6 +53,7 @@ function App() {
           <Route path="manage-attendance" element={<ManageAttendance />} />
           <Route path="manage-staff" element={<ManageStaff />} />          
           <Route path="register-staff" element={<RegisterStaff />} />
+          <Route path="edit-staff/:id" element={<EditStaff />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

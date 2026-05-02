@@ -91,7 +91,7 @@ export default function ManageStaff() {
                   </td>
                   <td className="px-8 py-4 text-center">
                     <button 
-                       onClick={() => navigate(`/profile/${u.id}`)}
+                       onClick={() => navigate(`/edit-staff/${u.id}`)}
                        className="p-2 text-gray-300 hover:text-indigo-600 hover:bg-white rounded-xl transition-all shadow-none hover:shadow-sm"
                     >
                       <ChevronRight size={20} />
