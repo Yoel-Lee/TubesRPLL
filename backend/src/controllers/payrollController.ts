@@ -19,7 +19,7 @@ export const calculatePayroll = async (req: AuthRequest, res: Response): Promise
         date: { gte: startDate, lt: endDate }
       }
     });
-    const totalIncentive = approvedReimbursements.reduce((sum, item) => sum + item.amount, 0);
+    const totalIncentive = approvedReimbursements.reduce((sum: number, item: any) => sum + item.amount, 0);
 
     // 2. Hitung PENALTI TELAT (Auto-detect dari Attendance)
     const attendances = await prisma.attendance.findMany({
@@ -34,7 +34,7 @@ export const calculatePayroll = async (req: AuthRequest, res: Response): Promise
     const LATE_THRESHOLD_HOUR = 9; // Batas jam 9 pagi
     const PENALTY_PER_LATE = 50000;
 
-    attendances.forEach((record) => {
+    attendances.forEach((record: any) => {
       const clockInHour = new Date(record.time).getHours();
       const clockInMinute = new Date(record.time).getMinutes();
       

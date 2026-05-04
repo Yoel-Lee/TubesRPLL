@@ -7,20 +7,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+// ========================== ENUM ==========================
 
-
-// eNUM
 enum Role {
   ADMIN
   STAFF
 }
 
-
 enum UserStatus {
   ACTIVE
   INACTIVE
 }
-
 
 enum RequestStatus {
   PENDING
@@ -28,13 +25,12 @@ enum RequestStatus {
   REJECTED
 }
 
-
 enum AttendanceType {
   IN
   OUT
 }
 
-// ========================== MODELS  ==========================
+// ========================== MODELS ==========================
 
 model User {
   id             Int             @id @default(autoincrement())
@@ -45,9 +41,8 @@ model User {
   status         UserStatus      @default(ACTIVE)
   createdAt      DateTime        @default(now())
   baseSalary     Float           @default(0)
-  phoneNumber    String?         // Tambahkan ini
+  phoneNumber    String?
   address        String?
-
 
   // Relasi Hierarki Manajer
   managerId      Int?
@@ -58,6 +53,7 @@ model User {
   leaves         Leave[]
   reimbursements Reimbursement[]
   attendances    Attendance[]
+  dendas         Denda[]   // ✅ tambahan relasi denda
 }
 
 model Leave {
@@ -86,4 +82,16 @@ model Attendance {
   type   AttendanceType
   userId Int
   user   User           @relation(fields: [userId], references: [id])
+}
+
+// ========================== MODEL DENDA ==========================
+
+model Denda {
+  id        Int      @id @default(autoincrement())
+  amount    Float    // jumlah denda
+  notes     String?  // catatan (opsional)
+  createdAt DateTime @default(now())
+
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
 }
