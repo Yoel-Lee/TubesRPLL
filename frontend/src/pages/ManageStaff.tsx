@@ -7,6 +7,10 @@ export default function ManageStaff() {
   const [allUsers, setAllUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const [showDendaModal, setShowDendaModal] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
+  const [amount, setAmount] = useState('');
+  const [notes, setNotes] = useState('');
 
   const fetchAllUsers = async () => {
     try {
@@ -16,6 +20,30 @@ export default function ManageStaff() {
       console.error("Gagal mengambil data pegawai", err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleSubmitDenda = async () => {
+    if (!selectedUserId || !amount) {
+      return alert("Amount wajib diisi");
+    }
+
+    try {
+      await api.post('/denda', {
+        userId: selectedUserId,
+        amount: Number(amount),
+        notes: notes
+      });
+
+      alert("Denda berhasil ditambahkan");
+
+      setShowDendaModal(false);
+      setAmount('');
+      setNotes('');
+      setSelectedUserId(null);
+
+    } catch (err) {
+      alert("Gagal menambahkan denda");
     }
   };
 
@@ -31,9 +59,9 @@ export default function ManageStaff() {
           <h2 className="text-2xl font-bold text-gray-800">Manajemen Pegawai</h2>
           <p className="text-gray-500 text-sm">Lihat dan kelola seluruh akun staff di sistem.</p>
         </div>
-        
+
         {/* Tombol menuju halaman registrasi yang kita buat tadi */}
-        <button 
+        <button
           onClick={() => navigate('/register-staff')}
           className="flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-2xl font-bold hover:bg-indigo-700 transition-all active:scale-95 shadow-lg shadow-indigo-100"
         >
@@ -78,21 +106,30 @@ export default function ManageStaff() {
                     </div>
                   </td>
                   <td className="px-8 py-4">
-                    <span className={`px-3 py-1 rounded-lg text-[10px] font-black tracking-wider border ${
-                      u.role === 'ADMIN' 
-                      ? 'bg-purple-50 text-purple-600 border-purple-100' 
+                    <span className={`px-3 py-1 rounded-lg text-[10px] font-black tracking-wider border ${u.role === 'ADMIN'
+                      ? 'bg-purple-50 text-purple-600 border-purple-100'
                       : 'bg-blue-50 text-blue-600 border-blue-100'
-                    }`}>
+                      }`}>
                       {u.role}
                     </span>
                   </td>
                   <td className="px-8 py-4 text-xs font-bold text-gray-500">
                     {u.manager?.name ? u.manager.name : <span className="text-gray-300 italic">No Manager</span>}
                   </td>
-                  <td className="px-8 py-4 text-center">
-                    <button 
-                       onClick={() => navigate(`/edit-staff/${u.id}`)}
-                       className="p-2 text-gray-300 hover:text-indigo-600 hover:bg-white rounded-xl transition-all shadow-none hover:shadow-sm"
+                  <td className="px-8 py-4 text-center flex justify-center gap-2">
+                    <button
+                      onClick={() => {
+                        setSelectedUserId(u.id);
+                        setShowDendaModal(true);
+                      }}
+                      className="px-3 py-1 text-xs font-bold bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition"
+                    >
+                      Denda
+                    </button>
+
+                    <button
+                      onClick={() => navigate(`/edit-staff/${u.id}`)}
+                      className="p-2 text-gray-300 hover:text-indigo-600 hover:bg-white rounded-xl transition-all"
                     >
                       <ChevronRight size={20} />
                     </button>
@@ -103,6 +140,47 @@ export default function ManageStaff() {
           </table>
         </div>
       </div>
+      {showDendaModal && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-2xl w-full max-w-md space-y-4">
+            <h3 className="text-lg font-bold text-gray-800">Tambah Denda</h3>
+
+            <div>
+              <label className="text-sm font-medium">Jumlah Denda</label>
+              <input
+                type="number"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+                className="w-full p-2 border rounded-lg mt-1"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium">Notes</label>
+              <textarea
+                value={notes}
+                onChange={(e) => setNotes(e.target.value)}
+                className="w-full p-2 border rounded-lg mt-1"
+              />
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2">
+              <button
+                onClick={() => setShowDendaModal(false)}
+                className="px-4 py-2 bg-gray-200 rounded-lg"
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleSubmitDenda}
+                className="px-4 py-2 bg-red-600 text-white rounded-lg"
+              >
+                Simpan
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

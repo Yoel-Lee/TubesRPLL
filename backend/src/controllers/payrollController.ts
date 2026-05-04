@@ -1,6 +1,6 @@
 import { type Response } from 'express';
 import prisma from '../db.js';
-import {type AuthRequest } from '../middleware/auth.js';
+import { type AuthRequest } from '../middleware/auth.js';
 
 export const calculatePayroll = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
@@ -30,6 +30,16 @@ export const calculatePayroll = async (req: AuthRequest, res: Response): Promise
       }
     });
 
+    // 3. Hitung DENDA (BARU 🔥)
+    const dendas = await prisma.denda.findMany({
+      where: {
+        userId: Number(userId),
+        createdAt: { gte: startDate, lt: endDate }
+      }
+    });
+
+    const totalDenda = dendas.reduce((sum: number, item: any) => sum + item.amount, 0);
+
     let latePenalty = 0;
     const LATE_THRESHOLD_HOUR = 9; // Batas jam 9 pagi
     const PENALTY_PER_LATE = 50000;
@@ -37,7 +47,7 @@ export const calculatePayroll = async (req: AuthRequest, res: Response): Promise
     attendances.forEach((record: any) => {
       const clockInHour = new Date(record.time).getHours();
       const clockInMinute = new Date(record.time).getMinutes();
-      
+
       // Jika jam > 9 ATAU (jam == 9 dan menit > 0)
       if (clockInHour > LATE_THRESHOLD_HOUR || (clockInHour === LATE_THRESHOLD_HOUR && clockInMinute > 0)) {
         latePenalty += PENALTY_PER_LATE;
@@ -45,7 +55,7 @@ export const calculatePayroll = async (req: AuthRequest, res: Response): Promise
     });
 
     // 3. Kalkulasi Akhir
-    const netSalary = user.baseSalary + totalIncentive - latePenalty;
+    const netSalary = user.baseSalary + totalIncentive - latePenalty - totalDenda;
 
     res.json({
       employee: user.name,
@@ -54,8 +64,10 @@ export const calculatePayroll = async (req: AuthRequest, res: Response): Promise
       details: {
         baseSalary: user.baseSalary,
         totalReimburse: totalIncentive,
+        totalPenalty: latePenalty + totalDenda,
         totalLatePenalty: latePenalty,
         totalLateRecords: latePenalty / PENALTY_PER_LATE,
+        totalDenda: totalDenda,
         grandTotal: netSalary
       }
     });

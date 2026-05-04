@@ -11,6 +11,7 @@ interface PayrollData {
     totalReimburse: number;
     totalLatePenalty: number;
     totalLateRecords: number;
+    totalDenda: number;
     grandTotal: number;
   };
 }
@@ -60,7 +61,7 @@ export default function Payroll() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-end">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Pilih Pegawai</label>
-            <select 
+            <select
               className="w-full p-3 border rounded-xl outline-none focus:ring-2 focus:ring-indigo-500"
               value={selectedUser}
               onChange={(e) => setSelectedUser(e.target.value)}
@@ -71,17 +72,17 @@ export default function Payroll() {
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Bulan</label>
-            <select 
+            <select
               className="w-full p-3 border rounded-xl outline-none"
               value={month}
               onChange={(e) => setMonth(Number(e.target.value))}
             >
               {[...Array(12)].map((_, i) => (
-                <option key={i+1} value={i+1}>Bulan ke-{i+1}</option>
+                <option key={i + 1} value={i + 1}>Bulan ke-{i + 1}</option>
               ))}
             </select>
           </div>
-          <button 
+          <button
             onClick={handleCalculate}
             disabled={loading}
             className="bg-indigo-600 text-white py-3 rounded-xl font-bold hover:bg-indigo-700 transition disabled:bg-gray-400"
@@ -123,6 +124,10 @@ export default function Payroll() {
                   <AlertCircle size={14} />
                 </span>
                 <span className="font-medium">- Rp {payroll.details.totalLatePenalty.toLocaleString()}</span>
+              </div>
+              <div className="flex justify-between text-red-600">
+                <span>Denda</span>
+                <span>- Rp {payroll.details.totalDenda.toLocaleString() || 0}</span>
               </div>
             </div>
 
