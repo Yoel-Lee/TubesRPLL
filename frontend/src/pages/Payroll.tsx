@@ -12,6 +12,7 @@ interface PayrollData {
     totalLatePenalty: number;
     totalLateRecords: number;
     totalDenda: number;
+    totalBonus: number;
     grandTotal: number;
   };
 }
@@ -114,10 +115,19 @@ export default function Payroll() {
                 <span>Gaji Pokok</span>
                 <span className="font-medium">Rp {payroll.details.baseSalary.toLocaleString()}</span>
               </div>
+
               <div className="flex justify-between text-green-600">
                 <span>Insentif (Reimburse)</span>
                 <span className="font-medium">+ Rp {payroll.details.totalReimburse.toLocaleString()}</span>
               </div>
+
+              <div className="flex justify-between text-green-600">
+                <span>Bonus</span>
+                <span className="font-medium">
+                  + Rp {payroll.details.totalBonus?.toLocaleString() || 0}
+                </span>
+              </div>
+
               <div className="flex justify-between text-red-600">
                 <span className="flex items-center gap-1">
                   Potongan Telat ({payroll.details.totalLateRecords}x)
@@ -125,6 +135,7 @@ export default function Payroll() {
                 </span>
                 <span className="font-medium">- Rp {payroll.details.totalLatePenalty.toLocaleString()}</span>
               </div>
+
               <div className="flex justify-between text-red-600">
                 <span>Denda</span>
                 <span>- Rp {payroll.details.totalDenda.toLocaleString() || 0}</span>

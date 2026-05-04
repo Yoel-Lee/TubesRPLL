@@ -53,7 +53,8 @@ model User {
   leaves         Leave[]
   reimbursements Reimbursement[]
   attendances    Attendance[]
-  dendas         Denda[]   // ✅ tambahan relasi denda
+  dendas         Denda[]
+  bonuses        Bonus[]
 }
 
 model Leave {
@@ -90,6 +91,16 @@ model Denda {
   id        Int      @id @default(autoincrement())
   amount    Float    // jumlah denda
   notes     String?  // catatan (opsional)
+  createdAt DateTime @default(now())
+
+  userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+model Bonus {
+  id        Int      @id @default(autoincrement())
+  amount    Float
+  notes     String?
   createdAt DateTime @default(now())
 
   userId    Int

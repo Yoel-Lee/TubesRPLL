@@ -11,6 +11,9 @@ export default function ManageStaff() {
   const [selectedUserId, setSelectedUserId] = useState<number | null>(null);
   const [amount, setAmount] = useState('');
   const [notes, setNotes] = useState('');
+  const [showBonusModal, setShowBonusModal] = useState(false);
+  const [bonusAmount, setBonusAmount] = useState('');
+  const [bonusNotes, setBonusNotes] = useState('');
 
   const fetchAllUsers = async () => {
     try {
@@ -44,6 +47,30 @@ export default function ManageStaff() {
 
     } catch (err) {
       alert("Gagal menambahkan denda");
+    }
+  };
+
+  const handleSubmitBonus = async () => {
+    if (!selectedUserId || !bonusAmount) {
+      return alert("Amount wajib diisi");
+    }
+
+    try {
+      await api.post('/bonus', {
+        userId: selectedUserId,
+        amount: Number(bonusAmount),
+        notes: bonusNotes
+      });
+
+      alert("Bonus berhasil ditambahkan");
+
+      setShowBonusModal(false);
+      setBonusAmount('');
+      setBonusNotes('');
+      setSelectedUserId(null);
+
+    } catch (err) {
+      alert("Gagal menambahkan bonus");
     }
   };
 
@@ -120,6 +147,15 @@ export default function ManageStaff() {
                     <button
                       onClick={() => {
                         setSelectedUserId(u.id);
+                        setShowBonusModal(true);
+                      }}
+                      className="px-3 py-1 text-xs font-bold bg-green-100 text-green-600 rounded-lg hover:bg-green-200 transition"
+                    >
+                      Bonus
+                    </button>
+                    <button
+                      onClick={() => {
+                        setSelectedUserId(u.id);
                         setShowDendaModal(true);
                       }}
                       className="px-3 py-1 text-xs font-bold bg-red-100 text-red-600 rounded-lg hover:bg-red-200 transition"
@@ -140,6 +176,48 @@ export default function ManageStaff() {
           </table>
         </div>
       </div>
+      {showBonusModal && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white p-6 rounded-2xl w-full max-w-md space-y-4">
+            <h3 className="text-lg font-bold text-gray-800">Tambah Bonus</h3>
+
+            <div>
+              <label className="text-sm font-medium">Jumlah Bonus</label>
+              <input
+                type="number"
+                value={bonusAmount}
+                onChange={(e) => setBonusAmount(e.target.value)}
+                className="w-full p-2 border rounded-lg mt-1"
+              />
+            </div>
+
+            <div>
+              <label className="text-sm font-medium">Notes</label>
+              <textarea
+                value={bonusNotes}
+                onChange={(e) => setBonusNotes(e.target.value)}
+                className="w-full p-2 border rounded-lg mt-1"
+              />
+            </div>
+
+            <div className="flex justify-end gap-2 pt-2">
+              <button
+                onClick={() => setShowBonusModal(false)}
+                className="px-4 py-2 bg-gray-200 rounded-lg"
+              >
+                Batal
+              </button>
+              <button
+                onClick={handleSubmitBonus}
+                className="px-4 py-2 bg-green-600 text-white rounded-lg"
+              >
+                Simpan
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {showDendaModal && (
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-2xl w-full max-w-md space-y-4">

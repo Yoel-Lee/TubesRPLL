@@ -30,7 +30,15 @@ export const calculatePayroll = async (req: AuthRequest, res: Response): Promise
       }
     });
 
-    // 3. Hitung DENDA (BARU 🔥)
+    const bonuses = await prisma.bonus.findMany({
+      where: {
+        userId: Number(userId),
+        createdAt: { gte: startDate, lt: endDate }
+      }
+    });
+
+    const totalBonus = bonuses.reduce((sum, item) => sum + item.amount, 0);
+
     const dendas = await prisma.denda.findMany({
       where: {
         userId: Number(userId),
@@ -55,7 +63,7 @@ export const calculatePayroll = async (req: AuthRequest, res: Response): Promise
     });
 
     // 3. Kalkulasi Akhir
-    const netSalary = user.baseSalary + totalIncentive - latePenalty - totalDenda;
+    const netSalary = user.baseSalary + totalIncentive + totalBonus - latePenalty - totalDenda;
 
     res.json({
       employee: user.name,
@@ -67,6 +75,7 @@ export const calculatePayroll = async (req: AuthRequest, res: Response): Promise
         totalPenalty: latePenalty + totalDenda,
         totalLatePenalty: latePenalty,
         totalLateRecords: latePenalty / PENALTY_PER_LATE,
+        totalBonus: totalBonus,
         totalDenda: totalDenda,
         grandTotal: netSalary
       }
