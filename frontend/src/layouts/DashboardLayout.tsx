@@ -1,13 +1,16 @@
 import { Outlet, Link, useNavigate } from 'react-router-dom';
-import { 
-  LayoutDashboard, 
-  Calendar, 
-  ClipboardCheck, 
-  LogOut, 
-  Receipt, 
-  DollarSign, 
-  ChevronRight, 
-  User as UserIcon 
+import {
+  LayoutDashboard,
+  Calendar,
+  ClipboardCheck,
+  LogOut,
+  Receipt,
+  DollarSign,
+  ChevronRight,
+  User as UserIcon,
+  CalendarDays,
+  Users,
+  Clock, Network
 } from 'lucide-react';
 
 export default function DashboardLayout() {
@@ -24,7 +27,7 @@ export default function DashboardLayout() {
       {/* Sidebar */}
       <aside className="w-64 bg-indigo-900 text-white p-6 flex flex-col">
         <h1 className="text-2xl font-bold mb-10 text-indigo-300 tracking-tight">ITHB HRIS</h1>
-        
+
         <nav className="space-y-4 flex-1">
           <Link to="/attendance" className="flex items-center gap-3 hover:text-indigo-300 transition">
             <LayoutDashboard size={20} /> Absensi
@@ -34,6 +37,12 @@ export default function DashboardLayout() {
           </Link>
           <Link to="/reimburse" className="flex items-center gap-3 hover:text-indigo-300 transition">
             <Receipt size={20} /> Reimburse
+          </Link>
+          <Link to="/reporting-line" className="flex items-center gap-3 hover:text-indigo-300 transition">
+            <Network size={20} /> Struktur Organisasi
+          </Link>
+          <Link to="/leave-calendar" className="flex items-center gap-3 hover:text-indigo-300 transition">
+            <CalendarDays size={20} /> Calendar
           </Link>
 
           {user.role === 'ADMIN' && (
@@ -46,10 +55,10 @@ export default function DashboardLayout() {
                 <DollarSign size={20} /> Payroll
               </Link>
               <Link to="/manage-attendance" className="flex items-center gap-3 hover:text-indigo-300 transition">
-                <Calendar size={20} /> Koreksi Absen
+                <Clock size={20} /> Koreksi Absen
               </Link>
               <Link to="/manage-staff" className="flex items-center gap-3 hover:text-indigo-300 transition">
-                <Calendar size={20} /> Manage Staff
+                <Users size={20} /> Manage Staff
               </Link>
             </>
           )}
@@ -57,7 +66,7 @@ export default function DashboardLayout() {
 
         {/* --- BAGIAN PROFILE (YANG BISA DIKLIK) --- */}
         <div className="border-t border-indigo-800 pt-6 mt-auto space-y-4">
-          <div 
+          <div
             onClick={() => navigate('/profile')}
             className="flex items-center gap-3 p-3 bg-indigo-800/50 rounded-2xl cursor-pointer hover:bg-indigo-800 transition-all active:scale-95 group"
           >
@@ -71,8 +80,8 @@ export default function DashboardLayout() {
             <ChevronRight size={14} className="opacity-40 group-hover:opacity-100 group-hover:translate-x-1 transition-all" />
           </div>
 
-          <button 
-            onClick={handleLogout} 
+          <button
+            onClick={handleLogout}
             className="flex items-center gap-3 w-full px-3 py-2 text-red-400 hover:text-red-300 transition-colors text-sm font-bold"
           >
             <LogOut size={18} /> Logout
@@ -88,9 +97,9 @@ export default function DashboardLayout() {
             <h2 className="text-xl font-bold text-gray-800">Halo, {user.name} 👋</h2>
           </div>
           <div className="flex items-center gap-3">
-             <span className="px-4 py-1.5 bg-indigo-50 text-indigo-700 rounded-xl text-xs font-black uppercase tracking-wider border border-indigo-100">
-                {user.role}
-             </span>
+            <span className="px-4 py-1.5 bg-indigo-50 text-indigo-700 rounded-xl text-xs font-black uppercase tracking-wider border border-indigo-100">
+              {user.role}
+            </span>
           </div>
         </header>
         <div className="max-w-7xl mx-auto">

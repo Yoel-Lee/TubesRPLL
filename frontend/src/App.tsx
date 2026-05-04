@@ -13,6 +13,8 @@ import Profile from './pages/Profile';
 import RegisterStaff from './pages/RegisterStaff';
 import ManageStaff from './pages/ManageStaff';
 import EditStaff from './pages/EditStaff';
+import LeaveCalendar from './pages/LeaveCalendar';
+import ReportingLine from './pages/ReportingLine';
 
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const isAuthenticated = !!localStorage.getItem('token');
@@ -42,6 +44,8 @@ function App() {
           <Route index element={<Navigate to="/attendance" replace />} />
           <Route path="attendance" element={<Attendance />} />
           <Route path="leave" element={<LeaveRequest />} />
+          <Route path="leave-calendar" element={<LeaveCalendar />} />
+          <Route path="reporting-line" element={<ReportingLine />} />
           <Route path="reimburse" element={<Reimbursement />} />
           
           {/* 2. TAMBAHKAN RUTE PROFILE DI SINI */}

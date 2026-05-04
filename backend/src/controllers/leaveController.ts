@@ -66,3 +66,18 @@ export const updateLeaveStatus = async (req: AuthRequest, res: Response): Promis
     res.status(500).json({ message: 'Gagal update status cuti', error: String(error) });
   }
 };
+
+// 4. Endpoint khusus Kalender: Semua user bisa lihat, tapi HANYA yang APPROVED
+export const getApprovedLeavesForCalendar = async (req: AuthRequest, res: Response): Promise<any> => {
+  try {
+    const approvedLeaves = await prisma.leave.findMany({
+      where: { status: 'APPROVED' },
+      include: { 
+        user: { select: { name: true } } // Hanya ambil nama saja untuk privasi
+      }
+    });
+    res.json(approvedLeaves);
+  } catch (error) {
+    res.status(500).json({ error: String(error) });
+  }
+};
