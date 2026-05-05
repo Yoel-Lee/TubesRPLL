@@ -60,12 +60,14 @@ export const getLeaves = async (req: AuthRequest, res: Response): Promise<any> =
 export const updateLeaveStatus = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const { id } = req.params;
-    const { status } = req.body; // APPROVED atau REJECTED
+    const { status, isPaid } = req.body; // APPROVED atau REJECTED
 
     // 1. Update status cutinya terlebih dahulu
     const updatedLeave = await prisma.leave.update({
       where: { id: Number(id) },
-      data: { status }
+      data: { 
+        status, 
+        isPaid: Boolean(isPaid) }
     });
 
     // 2. Tembakkan notifikasi ke pemohon cuti

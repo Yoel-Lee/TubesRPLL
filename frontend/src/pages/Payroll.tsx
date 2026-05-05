@@ -13,6 +13,8 @@ interface PayrollData {
     totalLateRecords: number;
     totalDenda: number;
     totalBonus: number;
+    unpaidLeaveDays: number;
+    unpaidLeaveDeduction: number;
     grandTotal: number;
   };
 }
@@ -40,7 +42,7 @@ export default function Payroll() {
       const { data } = await api.post('/payroll/calculate', {
         userId: selectedUser,
         month: Number(month),
-        year: 2026 // Bisa dibuat dinamis
+        year: 2026
       });
       setPayroll(data);
     } catch (err) {
@@ -140,6 +142,17 @@ export default function Payroll() {
                 <span>Denda</span>
                 <span>- Rp {payroll.details.totalDenda.toLocaleString() || 0}</span>
               </div>
+
+              {payroll.details.unpaidLeaveDays > 0 && (
+                <div className="flex justify-between text-red-600">
+                  <span>
+                    Cuti Tidak Dibayar ({payroll.details.unpaidLeaveDays} hari)
+                  </span>
+                  <span>
+                    - Rp {payroll.details.unpaidLeaveDeduction.toLocaleString() || 0}
+                  </span>
+                </div>
+              )}
             </div>
 
             <div className="pt-6 border-t-2 border-dashed flex justify-between items-center">

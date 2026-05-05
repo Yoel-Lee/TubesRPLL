@@ -67,6 +67,7 @@ model Leave {
   status    RequestStatus @default(PENDING)
   userId    Int
   user      User          @relation(fields: [userId], references: [id])
+  isPaid Boolean @default(true)
 }
 
 model Reimbursement {
