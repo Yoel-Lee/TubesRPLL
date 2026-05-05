@@ -50,11 +50,13 @@ model User {
   staffs         User[]          @relation("UserManager")
 
   // Relasi Data
-  leaves         Leave[]
-  reimbursements Reimbursement[]
-  attendances    Attendance[]
-  dendas         Denda[]
-  bonuses        Bonus[]
+  leaves          Leave[]
+  reimbursements  Reimbursement[]
+  attendances     Attendance[]
+  dendas          Denda[]
+  bonuses         Bonus[]
+  notifications   Notification[]
+  activityLogs    ActivityLog[]
 }
 
 model Leave {
@@ -104,5 +106,30 @@ model Bonus {
   createdAt DateTime @default(now())
 
   userId    Int
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+// ========================== MODEL NOTIFIKASI ==========================
+
+model Notification {
+  id        Int      @id @default(autoincrement())
+  title     String   // Judul notif (misal: "Cuti Disetujui")
+  message   String   // Isi pesan detail
+  isRead    Boolean  @default(false) // Status dibaca/belum
+  createdAt DateTime @default(now())
+
+  userId    Int      // Penerima notifikasi
+  user      User     @relation(fields: [userId], references: [id])
+}
+
+// ========================== MODEL ACTIVITY LOG ==========================
+
+model ActivityLog {
+  id        Int      @id @default(autoincrement())
+  action    String   // Kategori aksi (Contoh: "APPROVE_LEAVE", "UPDATE_STAFF")
+  details   String   // Deskripsi lengkap (Contoh: "Budi menyetujui cuti Adelia")
+  createdAt DateTime @default(now())
+
+  userId    Int      // Siapa pelakunya (Admin/Staff)
   user      User     @relation(fields: [userId], references: [id])
 }

@@ -2,8 +2,8 @@ import {type Request, type Response } from 'express';
 import prisma from '../db.js';
 import bcrypt from 'bcrypt';
 import { type AuthRequest } from '../middleware/auth.js';
+import { logActivity } from '../utils/activityHelper.js';
 
-// 1. Register Staff (Oleh Admin)
 // 1. Register Staff (Oleh Admin) - VERSI UPDATE
 export const registerStaff = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
@@ -28,6 +28,16 @@ export const registerStaff = async (req: AuthRequest, res: Response): Promise<an
         address     
       }
     });
+
+    // 👇 TAMBAHKAN LOG ACTIVITY DI SINI 👇
+    // Kita asumsikan req.user.id adalah ID Admin yang sedang login
+    if (req.user) {
+      await logActivity(
+        req.user.id, 
+        "REGISTER_STAFF", 
+        `Mendaftarkan staff baru bernama ${newUser.name} dengan role ${newUser.role}`
+      );
+    }
 
     res.status(201).json({ message: "Staff berhasil dibuat", data: newUser });
   } catch (error: any) {
@@ -68,6 +78,7 @@ export const updateUserProfile = async (req: AuthRequest, res: Response): Promis
   try {
     const { id } = req.params;
     const userIdToUpdate = Number(id);
+    const actorId = req.user!.id; // Orang yang melakukan klik "Save"
     
     // 1. Logika Proteksi: Cek akses
     if (req.user?.role !== 'ADMIN' && req.user?.id !== userIdToUpdate) {
@@ -75,7 +86,6 @@ export const updateUserProfile = async (req: AuthRequest, res: Response): Promis
     }
 
     // 2. Filter Data: Pisahkan mana yang boleh diedit User vs Admin
-    // Kita ambil semua yang mungkin dikirim dari body
     const { name, phoneNumber, address, status, role, managerId, baseSalary } = req.body;
 
     let updateData: any = {
@@ -94,8 +104,15 @@ export const updateUserProfile = async (req: AuthRequest, res: Response): Promis
 
     const updatedUser = await prisma.user.update({
       where: { id: userIdToUpdate },
-      data: updateData // Gunakan data yang sudah difilter
+      data: updateData 
     });
+
+    // 👇 TAMBAHKAN LOG ACTIVITY DI SINI 👇
+    const detailPesan = req.user?.role === 'ADMIN' 
+      ? `Admin mengubah data profil/gaji milik staff: ${updatedUser.name}`
+      : `Staff memperbarui data profilnya sendiri`;
+
+    await logActivity(actorId, "UPDATE_USER_PROFILE", detailPesan);
 
     res.json({ 
       message: "Profil berhasil diupdate", 
@@ -113,24 +130,29 @@ export const updateUserProfile = async (req: AuthRequest, res: Response): Promis
   }
 };
 
-export const updateMyProfile = async (req: AuthRequest, res: Response) => {
+export const updateMyProfile = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const userId = Number(req.user?.id);
 
-if (isNaN(userId)) {
-  return res.status(400).json({ error: "Invalid user ID" });
-}
+    if (isNaN(userId)) {
+      return res.status(400).json({ error: "Invalid user ID" });
+    }
     const { name, phoneNumber, address } = req.body;
 
     const updatedUser = await prisma.user.update({
       where: { id: userId },
-      
       data: {
         name,
         phoneNumber,
         address
       }
     });
+
+    await logActivity(
+      userId, 
+      "UPDATE_PERSONAL_PROFILE", 
+      `Memperbarui data profil pribadi (Nama/No.Telp/Alamat)`
+    );
 
     res.json(updatedUser);
   } catch (err: any) {

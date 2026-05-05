@@ -9,6 +9,8 @@ import reimburseRoutes from './routes/reimburseRoutes.js';
 import payrollRoutes from './routes/payrollRoutes.js';
 import { dendaRoutes } from './routes/dendaRoutes.js';
 import { bonusRoutes } from './routes/bonusRoutes.js';
+import notificationRoutes from './routes/notificationRoutes.js';
+import activityRoutes from './routes/activityRoutes.js';
 
 dotenv.config();
 
@@ -27,6 +29,8 @@ app.use('/api/reimbursements', reimburseRoutes);
 app.use('/api/payroll', payrollRoutes);
 app.use('/api/denda', dendaRoutes);
 app.use('/api/bonus', bonusRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/activities', activityRoutes);
 
 
 app.listen(PORT, () => {

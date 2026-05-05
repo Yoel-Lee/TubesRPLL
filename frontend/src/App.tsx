@@ -15,6 +15,7 @@ import ManageStaff from './pages/ManageStaff';
 import EditStaff from './pages/EditStaff';
 import LeaveCalendar from './pages/LeaveCalendar';
 import ReportingLine from './pages/ReportingLine';
+import ActivityLog from './pages/ActivityLog';
 
 const PrivateRoute = ({ children }: { children: React.ReactNode }) => {
   const isAuthenticated = !!localStorage.getItem('token');
@@ -58,6 +59,7 @@ function App() {
           <Route path="manage-staff" element={<ManageStaff />} />          
           <Route path="register-staff" element={<RegisterStaff />} />
           <Route path="edit-staff/:id" element={<EditStaff />} />
+          <Route path="activity-log" element={<ActivityLog />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/" replace />} />

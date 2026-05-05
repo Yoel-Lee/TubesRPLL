@@ -1,6 +1,7 @@
 import { type Response } from 'express';
 import prisma from '../db.js';
 import { type AuthRequest } from '../middleware/auth.js';
+import { logActivity } from '../utils/activityHelper.js';
 
 // 1. Staff mengajukan cuti
 export const requestLeave = async (req: AuthRequest, res: Response): Promise<any> => {
@@ -13,12 +14,18 @@ export const requestLeave = async (req: AuthRequest, res: Response): Promise<any
         startDate: new Date(startDate),
         endDate: new Date(endDate),
         reason,
-        userId,
-        status: 'PENDING'
+        userId
       }
     });
 
-    res.status(201).json({ message: 'Pengajuan cuti berhasil dikirim', data: newLeave });
+    // 👇 TAMBAHKAN LOG ACTIVITY DI SINI 👇
+    await logActivity(
+      userId, 
+      "REQUEST_LEAVE", 
+      `Mengajukan cuti dari tanggal ${startDate} s/d ${endDate} dengan alasan: "${reason}"`
+    );
+
+    res.status(201).json({ message: 'Cuti berhasil diajukan', data: newLeave });
   } catch (error) {
     res.status(500).json({ error: String(error) });
   }
@@ -55,10 +62,22 @@ export const updateLeaveStatus = async (req: AuthRequest, res: Response): Promis
     const { id } = req.params;
     const { status } = req.body; // APPROVED atau REJECTED
 
-    // Update status
+    // 1. Update status cutinya terlebih dahulu
     const updatedLeave = await prisma.leave.update({
       where: { id: Number(id) },
       data: { status }
+    });
+
+    // 2. Tembakkan notifikasi ke pemohon cuti
+    let title = "Status Cuti Diperbarui";
+    let message = `Pengajuan cuti Anda telah ${status === 'APPROVED' ? 'DISETUJUI' : 'DITOLAK'} oleh Admin.`;
+    
+    await prisma.notification.create({
+      data: {
+        userId: updatedLeave.userId, // ID staff yang mengajukan cuti
+        title,
+        message
+      }
     });
 
     res.json({ message: `Status cuti berhasil diupdate menjadi ${status}`, data: updatedLeave });
