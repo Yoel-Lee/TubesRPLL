@@ -48,7 +48,6 @@ export default function Reimbursement() {
 
   return (
     <div className="space-y-8">
-      {/* Form Input */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
         <div className="flex items-center gap-2 mb-6 text-indigo-900">
           <Plus size={24} className="bg-indigo-100 p-1 rounded-lg" />
@@ -92,7 +91,6 @@ export default function Reimbursement() {
         </form>
       </div>
 
-      {/* Tabel Riwayat */}
       <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div className="p-6 border-b border-gray-100 flex items-center gap-2">
           <DollarSign size={20} className="text-gray-400" />

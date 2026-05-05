@@ -3,13 +3,11 @@ import prisma from '../db.js';
 import {type AuthRequest } from '../middleware/auth.js';
 import { logActivity } from '../utils/activityHelper.js';
 
-// 1. Staff mengajukan Reimbursement
 export const requestReimburse = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const { date, description, amount } = req.body;
     const userId = req.user!.id;
 
-    // A. Buat data reimbursement
     const newReimburse = await prisma.reimbursement.create({
       data: {
         date: new Date(date),
@@ -20,15 +18,12 @@ export const requestReimburse = async (req: AuthRequest, res: Response): Promise
       }
     });
 
-    // B. Ambil nama staff untuk isi pesan notifikasi
     const sender = await prisma.user.findUnique({ where: { id: userId } });
 
-    // C. Cari semua user yang jabatannya ADMIN
     const admins = await prisma.user.findMany({
       where: { role: 'ADMIN' }
     });
 
-    // D. Tembakkan notifikasi ke SEMUA admin
     const notificationData = admins.map(admin => ({
       userId: admin.id,
       title: "Pengajuan Reimburse Baru 💰",
@@ -47,7 +42,6 @@ export const requestReimburse = async (req: AuthRequest, res: Response): Promise
   }
 };
 
-// 2. Lihat Daftar Reimburse (Admin/Manager lihat semua, Staff lihat sendiri)
 export const getReimbursements = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const user = req.user;
@@ -70,26 +64,22 @@ export const getReimbursements = async (req: AuthRequest, res: Response): Promis
   }
 };
 
-// 3. Admin Update Status Reimburse (Bonus sekalian kita kasih notif balik ke Staff!)
 export const updateReimburseStatus = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const { id } = req.params;
     const { status } = req.body; // APPROVED atau REJECTED
-    const adminId = req.user!.id; // ID Admin yang sedang login
+    const adminId = req.user!.id;
 
     const updatedReimburse = await prisma.reimbursement.update({
       where: { id: Number(id) },
       data: { status }
     });
 
-    // 👇 TAMBAHKAN BARIS INI UNTUK MENCATAT LOG 👇
     await logActivity(
       adminId, 
       "UPDATE_REIMBURSE", 
       `Mengubah status reimburse ID #${id} menjadi ${status}`
     );
-
-    // (Kode notifikasi yang sebelumnya kita buat biarkan saja di bawah sini...)
     
     res.json({ message: `Status reimburse diupdate menjadi ${status}`, data: updatedReimburse });
   } catch (error) {

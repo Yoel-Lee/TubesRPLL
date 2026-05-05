@@ -192,7 +192,6 @@ export default function DashboardLayout() {
         </div>
       </main>
 
-      {/* Overlay transparan untuk menutup dropdown jika user klik area di luar kotak dropdown */}
       {showNotif && (
         <div 
           className="fixed inset-0 z-40"

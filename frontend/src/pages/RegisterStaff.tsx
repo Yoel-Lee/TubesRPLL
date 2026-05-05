@@ -18,13 +18,11 @@ export default function RegisterStaff() {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // 1. Validasi Email Karyawan Baru
         if (!formData.email.endsWith('@gmail.com')) {
             alert("Pendaftaran hanya diperbolehkan menggunakan domain @gmail.com");
             return;
         }
 
-        // 2. Validasi Password Default (mencegah input kosong)
         if (!formData.password) {
             alert("Password default harus diisi (misal: 123)");
             return;
@@ -50,14 +48,13 @@ export default function RegisterStaff() {
                 setFormData({
                     name: '',
                     email: '',
-                    password: '', // Kembali kosong untuk inputan berikutnya
+                    password: '',
                     role: 'STAFF',
                     baseSalary: 0,
                     phoneNumber: '',
                     address: ''
                 });
-                
-                // Opsional: Langsung kembali ke halaman manage staff setelah berhasil
+
                 navigate('/manage-staff'); 
             }
         } catch (err: any) {
@@ -68,7 +65,6 @@ export default function RegisterStaff() {
 
     return (
         <div className="max-w-2xl mx-auto space-y-6 animate-slide-up">
-            {/* Bagian Header dengan Tombol Back */}
             <div className="flex items-center gap-4">
                 <button 
                     onClick={() => navigate('/manage-staff')}
@@ -90,7 +86,6 @@ export default function RegisterStaff() {
             <div className="bg-white p-8 rounded-3xl shadow-sm border border-gray-100">
                 <form onSubmit={handleSubmit} className="space-y-5">
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                        {/* Nama Lengkap */}
                         <div className="space-y-2">
                             <label className="text-sm font-bold text-gray-700 flex items-center gap-2">
                                 <User size={16} /> Nama Lengkap
@@ -103,7 +98,6 @@ export default function RegisterStaff() {
                             />
                         </div>
 
-                        {/* Email */}
                         <div className="space-y-2">
                             <label className="text-sm font-bold text-gray-700 flex items-center gap-2">
                                 <Mail size={16} /> Email (@gmail.com)
@@ -116,7 +110,6 @@ export default function RegisterStaff() {
                             />
                         </div>
 
-                        {/* Password */}
                         <div className="space-y-2">
                             <label className="text-sm font-bold text-gray-700 flex items-center gap-2">
                                 <Lock size={16} /> Password
@@ -129,7 +122,6 @@ export default function RegisterStaff() {
                             />
                         </div>
 
-                        {/* Gaji Pokok */}
                         <div className="space-y-2">
                             <label className="text-sm font-bold text-gray-700 flex items-center gap-2">
                                 <Wallet size={16} /> Gaji Pokok (Rp)
@@ -142,7 +134,6 @@ export default function RegisterStaff() {
                             />
                         </div>
 
-                        {/* Nomor Telepon */}
                         <div className="space-y-2">
                             <label className="text-sm font-bold text-gray-700 flex items-center gap-2">
                                 <Phone size={16} /> Nomor Telepon
@@ -155,7 +146,6 @@ export default function RegisterStaff() {
                             />
                         </div>
 
-                        {/* Role */}
                         <div className="space-y-2">
                             <label className="text-sm font-bold text-gray-700 flex items-center gap-2">
                                 <UserPlus size={16} /> Hak Akses
@@ -171,7 +161,6 @@ export default function RegisterStaff() {
                         </div>
                     </div>
 
-                    {/* Alamat */}
                     <div className="space-y-2">
                         <label className="text-sm font-bold text-gray-700 flex items-center gap-2">
                             <MapPin size={16} /> Alamat Domisili

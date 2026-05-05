@@ -17,12 +17,10 @@ export default function Login() {
 
     try {
       const { data } = await api.post('/auth/login', { email, password });
-      
-      // Simpan data ke localStorage
+
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
-      
-      // Redirect ke dashboard
+
       navigate('/attendance');
     } catch (err: any) {
       setError(err.response?.data?.message || 'Login gagal, periksa email dan password Anda.');

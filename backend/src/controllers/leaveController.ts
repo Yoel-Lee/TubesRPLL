@@ -3,7 +3,6 @@ import prisma from '../db.js';
 import { type AuthRequest } from '../middleware/auth.js';
 import { logActivity } from '../utils/activityHelper.js';
 
-// 1. Staff mengajukan cuti
 export const requestLeave = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const { startDate, endDate, reason } = req.body;
@@ -18,7 +17,6 @@ export const requestLeave = async (req: AuthRequest, res: Response): Promise<any
       }
     });
 
-    // 👇 TAMBAHKAN LOG ACTIVITY DI SINI 👇
     await logActivity(
       userId, 
       "REQUEST_LEAVE", 
@@ -31,12 +29,11 @@ export const requestLeave = async (req: AuthRequest, res: Response): Promise<any
   }
 };
 
-// 2. Mendapatkan daftar cuti (Admin lihat semua, Staff lihat punya sendiri)
 export const getLeaves = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const user = req.user;
-    
-    // Jika Admin, tarik semua data beserta nama pegawainya
+ 
+    // for admin
     if (user?.role === 'ADMIN') {
       const allLeaves = await prisma.leave.findMany({
         include: { user: { select: { name: true, email: true } } },
@@ -45,7 +42,7 @@ export const getLeaves = async (req: AuthRequest, res: Response): Promise<any> =
       return res.json(allLeaves);
     }
 
-    // Jika Staff, tarik cuti miliknya sendiri
+    // for staff
     const myLeaves = await prisma.leave.findMany({
         where: { userId: user!.id },
       orderBy: { startDate: 'desc' }
@@ -56,13 +53,11 @@ export const getLeaves = async (req: AuthRequest, res: Response): Promise<any> =
   }
 };
 
-// 3. Update Status Cuti (Hanya Admin atau Manajer yang bersangkutan)
 export const updateLeaveStatus = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const { id } = req.params;
     const { status, isPaid } = req.body; // APPROVED atau REJECTED
 
-    // 1. Update status cutinya terlebih dahulu
     const updatedLeave = await prisma.leave.update({
       where: { id: Number(id) },
       data: { 
@@ -70,13 +65,12 @@ export const updateLeaveStatus = async (req: AuthRequest, res: Response): Promis
         isPaid: Boolean(isPaid) }
     });
 
-    // 2. Tembakkan notifikasi ke pemohon cuti
     let title = "Status Cuti Diperbarui";
     let message = `Pengajuan cuti Anda telah ${status === 'APPROVED' ? 'DISETUJUI' : 'DITOLAK'} oleh Admin.`;
     
     await prisma.notification.create({
       data: {
-        userId: updatedLeave.userId, // ID staff yang mengajukan cuti
+        userId: updatedLeave.userId,
         title,
         message
       }
@@ -88,13 +82,12 @@ export const updateLeaveStatus = async (req: AuthRequest, res: Response): Promis
   }
 };
 
-// 4. Endpoint khusus Kalender: Semua user bisa lihat, tapi HANYA yang APPROVED
 export const getApprovedLeavesForCalendar = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const approvedLeaves = await prisma.leave.findMany({
       where: { status: 'APPROVED' },
       include: { 
-        user: { select: { name: true } } // Hanya ambil nama saja untuk privasi
+        user: { select: { name: true } } 
       }
     });
     res.json(approvedLeaves);

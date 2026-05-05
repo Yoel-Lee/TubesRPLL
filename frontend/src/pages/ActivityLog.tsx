@@ -20,7 +20,6 @@ export default function ActivityLog() {
     fetchLogs();
   }, []);
 
-  // Fungsi untuk memformat tanggal & jam
   const formatDateTime = (dateString: string) => {
     const date = new Date(dateString);
     return new Intl.DateTimeFormat('id-ID', {
@@ -48,7 +47,6 @@ export default function ActivityLog() {
           <div className="relative border-l-2 border-indigo-100 ml-4 space-y-8 pb-4">
             {logs.map((log) => (
               <div key={log.id} className="relative pl-8 group">
-                {/* Titik Timeline */}
                 <div className="absolute -left-[9px] top-1 w-4 h-4 rounded-full bg-white border-2 border-indigo-500 group-hover:bg-indigo-500 group-hover:scale-125 transition-all"></div>
                 
                 <div className="bg-gray-50/50 p-4 rounded-2xl border border-gray-100 hover:border-indigo-200 hover:shadow-md transition-all">

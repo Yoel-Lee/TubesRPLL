@@ -2,14 +2,13 @@ import { type Response } from 'express';
 import prisma from '../db.js';
 import { type AuthRequest } from '../middleware/auth.js';
 
-// Ambil notifikasi milik user yang sedang login
 export const getMyNotifications = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const userId = req.user!.id;
     const notifications = await prisma.notification.findMany({
       where: { userId },
       orderBy: { createdAt: 'desc' },
-      take: 20 // Ambil 20 notif terbaru saja agar tidak berat
+      take: 20 
     });
     res.json(notifications);
   } catch (error) {
@@ -17,7 +16,6 @@ export const getMyNotifications = async (req: AuthRequest, res: Response): Promi
   }
 };
 
-// Tandai satu notifikasi sebagai sudah dibaca
 export const markAsRead = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const { id } = req.params;
@@ -31,7 +29,6 @@ export const markAsRead = async (req: AuthRequest, res: Response): Promise<any> 
   }
 };
 
-// Tandai SEMUA notifikasi sebagai sudah dibaca
 export const markAllAsRead = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const userId = req.user!.id;

@@ -4,12 +4,10 @@ import bcrypt from 'bcrypt';
 import { type AuthRequest } from '../middleware/auth.js';
 import { logActivity } from '../utils/activityHelper.js';
 
-// 1. Register Staff (Oleh Admin) - VERSI UPDATE
 export const registerStaff = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const { name, email, password, role, managerId, baseSalary, phoneNumber, address } = req.body;
-    
-    // Validasi domain email (tambahan proteksi di backend)
+
     if (!email.endsWith('@gmail.com')) {
       return res.status(400).json({ error: "Hanya email @gmail.com yang diperbolehkan." });
     }
@@ -29,8 +27,6 @@ export const registerStaff = async (req: AuthRequest, res: Response): Promise<an
       }
     });
 
-    // 👇 TAMBAHKAN LOG ACTIVITY DI SINI 👇
-    // Kita asumsikan req.user.id adalah ID Admin yang sedang login
     if (req.user) {
       await logActivity(
         req.user.id, 
@@ -41,7 +37,6 @@ export const registerStaff = async (req: AuthRequest, res: Response): Promise<an
 
     res.status(201).json({ message: "Staff berhasil dibuat", data: newUser });
   } catch (error: any) {
-    // Cek jika email duplikat
     if (error.code === 'P2002') {
       return res.status(400).json({ error: "Email sudah terdaftar." });
     }
@@ -49,7 +44,6 @@ export const registerStaff = async (req: AuthRequest, res: Response): Promise<an
   }
 };
 
-// 2. Ambil Semua User (Oleh Admin)
 export const getAllUsers = async (req: Request, res: Response): Promise<any> => {
   try {
     const users = await prisma.user.findMany({
@@ -61,7 +55,6 @@ export const getAllUsers = async (req: Request, res: Response): Promise<any> => 
   }
 };
 
-// 3. Lihat Detail Profil
 export const getUserProfile = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const { id } = req.params;
@@ -73,19 +66,16 @@ export const getUserProfile = async (req: AuthRequest, res: Response): Promise<a
   }
 };
 
-// 4. Update Profil (Alamat, No Telp, - Sesuai Soal)
 export const updateUserProfile = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const { id } = req.params;
     const userIdToUpdate = Number(id);
-    const actorId = req.user!.id; // Orang yang melakukan klik "Save"
-    
-    // 1. Logika Proteksi: Cek akses
+    const actorId = req.user!.id; 
+
     if (req.user?.role !== 'ADMIN' && req.user?.id !== userIdToUpdate) {
       return res.status(403).json({ message: "Anda tidak punya akses mengedit user ini" });
     }
 
-    // 2. Filter Data: Pisahkan mana yang boleh diedit User vs Admin
     const { name, phoneNumber, address, status, role, managerId, baseSalary } = req.body;
 
     let updateData: any = {
@@ -94,7 +84,6 @@ export const updateUserProfile = async (req: AuthRequest, res: Response): Promis
       address,
     };
 
-    // 3. Hanya Admin yang boleh mengubah field sensitif ini
     if (req.user?.role === 'ADMIN') {
       if (status) updateData.status = status;
       if (role) updateData.role = role;
@@ -107,7 +96,6 @@ export const updateUserProfile = async (req: AuthRequest, res: Response): Promis
       data: updateData 
     });
 
-    // 👇 TAMBAHKAN LOG ACTIVITY DI SINI 👇
     const detailPesan = req.user?.role === 'ADMIN' 
       ? `Admin mengubah data profil/gaji milik staff: ${updatedUser.name}`
       : `Staff memperbarui data profilnya sendiri`;

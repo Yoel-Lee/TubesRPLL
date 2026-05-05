@@ -6,6 +6,5 @@ import { updateAttendance } from '../controllers/attendanceController.js';
 const router = Router();
 router.post('/', verifyToken, clockInOut);
 router.get('/', verifyToken, getHistory);
-// router.get('/all', getAllAttendance);
-router.patch('/:id', updateAttendance); // PATCH /api/attendance/:id
+router.patch('/:id', updateAttendance);
 export default router;

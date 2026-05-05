@@ -16,7 +16,6 @@ export default function ManageAttendance() {
 
   const handleEditClick = (log: any) => {
     setSelectedLog(log);
-    // Format tanggal agar cocok dengan input type="datetime-local"
     const date = new Date(log.time);
     date.setMinutes(date.getMinutes() - date.getTimezoneOffset());
     setEditForm({ 

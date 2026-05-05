@@ -14,7 +14,6 @@ export default function Attendance() {
   const [isScanning, setIsScanning] = useState(false);
   const [message, setMessage] = useState<{ text: string; type: 'success' | 'error' } | null>(null);
 
-  // Ambil riwayat absen hari ini
   const fetchLogs = async () => {
     try {
       const { data } = await api.get('/attendance');
@@ -42,7 +41,7 @@ export default function Attendance() {
           await api.post('/attendance', { type: nextType });
           
           setMessage({ text: `Absen ${nextType} Berhasil!`, type: 'success' });
-          fetchLogs(); // Refresh tabel
+          fetchLogs();
         } catch (err: any) {
           setMessage({ text: err.response?.data?.message || 'Gagal absen', type: 'error' });
         }

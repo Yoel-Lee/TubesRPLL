@@ -87,7 +87,6 @@ export default function ManageStaff() {
           <p className="text-gray-500 text-sm">Lihat dan kelola seluruh akun staff di sistem.</p>
         </div>
 
-        {/* Tombol menuju halaman registrasi yang kita buat tadi */}
         <button
           onClick={() => navigate('/register-staff')}
           className="flex items-center gap-2 bg-indigo-600 text-white px-6 py-3 rounded-2xl font-bold hover:bg-indigo-700 transition-all active:scale-95 shadow-lg shadow-indigo-100"

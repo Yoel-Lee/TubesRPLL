@@ -34,23 +34,20 @@ export default function LeaveCalendar() {
   const monthNames = ["Januari", "Februari", "Maret", "April", "Mei", "Juni", "Juli", "Agustus", "September", "Oktober", "November", "Desember"];
   const dayNames = ["Min", "Sen", "Sel", "Rab", "Kam", "Jum", "Sab"];
 
-  // Cek apakah ada pegawai yang cuti di tanggal tertentu
   const getLeavesForDay = (day: number) => {
     const checkDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
-    // Set ke jam 00:00 untuk perbandingan yang akurat
     checkDate.setHours(0, 0, 0, 0);
 
     return leaves.filter(leave => {
       const start = new Date(leave.startDate);
       start.setHours(0, 0, 0, 0);
       const end = new Date(leave.endDate);
-      end.setHours(23, 59, 59, 999); // Akhir hari
+      end.setHours(23, 59, 59, 999);
       
       return checkDate >= start && checkDate <= end;
     });
   };
 
-  // Warna-warni unik untuk nama pegawai
   const colors = ['bg-pink-100 text-pink-700', 'bg-blue-100 text-blue-700', 'bg-green-100 text-green-700', 'bg-purple-100 text-purple-700', 'bg-orange-100 text-orange-700'];
   const getColorForName = (name: string) => colors[name.length % colors.length];
 

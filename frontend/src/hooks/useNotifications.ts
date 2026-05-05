@@ -4,7 +4,7 @@ import api from '../lib/api';
 export function useNotifications(userRole: string | undefined) {
   const [notifications, setNotifications] = useState<any[]>([]);
 
-  // 1. Logika mengambil data
+  // mengambil data
   useEffect(() => {
     const fetchNotifications = async () => {
       try {
@@ -20,10 +20,10 @@ export function useNotifications(userRole: string | undefined) {
     }
   }, [userRole]);
 
-  // 2. Logika menghitung notif yang belum dibaca
+  // menghitung notif yang belum dibaca
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
-  // 3. Logika menandai satu dibaca
+  // menandai satu dibaca
   const markAsRead = async (id: number) => {
     try {
       await api.patch(`/notifications/${id}/read`);
@@ -35,7 +35,7 @@ export function useNotifications(userRole: string | undefined) {
     }
   };
 
-  // 4. Logika menandai semua dibaca
+  // menandai semua dibaca
   const markAllAsRead = async () => {
     try {
       await api.patch('/notifications/read-all');
@@ -45,7 +45,6 @@ export function useNotifications(userRole: string | undefined) {
     }
   };
 
-  // Kembalikan data dan fungsi agar bisa dipakai oleh komponen UI
   return {
     notifications,
     unreadCount,

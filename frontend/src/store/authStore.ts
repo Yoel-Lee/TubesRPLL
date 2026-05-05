@@ -1,6 +1,5 @@
 import { create } from 'zustand';
 
-// tipe data User
 interface User {
   id: number;
   name: string;
@@ -8,7 +7,6 @@ interface User {
   role: 'admin' | 'staff';
 }
 
-// tipe data untuk state autentikasi
 interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
@@ -16,14 +14,11 @@ interface AuthState {
   logout: () => void;
 }
 
-// Membuat Global Store
 export const useAuthStore = create<AuthState>((set) => ({
   user: null,
   isAuthenticated: false,
-  
-  // fungsi login
+
   login: (userData) => set({ user: userData, isAuthenticated: true }),
 
-  // fungsi logout
   logout: () => set({ user: null, isAuthenticated: false }),
 }));

@@ -4,9 +4,8 @@ import { verifyToken, verifyAdmin } from '../middleware/auth.js';
 
 const router = Router();
 
-router.post('/', verifyToken, requestLeave);     // Staff/Admin ajukan cuti
-router.get('/', verifyToken, getLeaves);        // Lihat daftar cuti
-router.get('/calendar', verifyToken, getApprovedLeavesForCalendar) // Buat liat kalender cuti
-router.patch('/:id', verifyToken, verifyAdmin, updateLeaveStatus); // Hanya Admin yang bisa approve/reject
-
+router.post('/', verifyToken, requestLeave);
+router.get('/', verifyToken, getLeaves);
+router.get('/calendar', verifyToken, getApprovedLeavesForCalendar);
+router.patch('/:id', verifyToken, verifyAdmin, updateLeaveStatus); 
 export default router;

@@ -54,7 +54,6 @@ export default function Payroll() {
 
   return (
     <div className="space-y-8">
-      {/* Selector Section */}
       <div className="bg-white p-6 rounded-2xl shadow-sm border border-gray-100">
         <div className="flex items-center gap-2 mb-6 text-indigo-900">
           <Calculator size={24} />
@@ -95,7 +94,6 @@ export default function Payroll() {
         </div>
       </div>
 
-      {/* Slip Gaji Result */}
       {payroll && (
         <div className="bg-white rounded-2xl shadow-lg border-2 border-indigo-50 overflow-hidden max-w-2xl mx-auto">
           <div className="bg-indigo-900 p-6 text-white flex justify-between items-center">

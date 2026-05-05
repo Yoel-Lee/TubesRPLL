@@ -4,10 +4,9 @@ import { type AuthRequest } from '../middleware/auth.js';
 
 export const getActivities = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
-    // Ambil 50 log terbaru agar tidak memberatkan server
     const logs = await prisma.activityLog.findMany({
       orderBy: { createdAt: 'desc' },
-      take: 50, 
+      take: 50, // 50 log teratas aja
       include: {
         user: {
           select: { name: true, role: true } // Tarik nama dan role pelakunya

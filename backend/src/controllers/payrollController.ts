@@ -2,9 +2,6 @@ import { type Response } from 'express';
 import prisma from '../db.js';
 import { type AuthRequest } from '../middleware/auth.js';
 
-// ========================
-// HITUNG HARI KERJA
-// ========================
 const getWorkingDaysBetween = (start: Date, end: Date) => {
   let count = 0;
   const date = new Date(start);
@@ -33,14 +30,8 @@ export const calculatePayroll = async (req: AuthRequest, res: Response): Promise
       return res.status(404).json({ message: "User tidak ditemukan" });
     }
 
-    // ========================
-    // 🔥 FIX UTAMA DI SINI
-    // ========================
     const baseSalary = Number(user.baseSalary) || 0;
 
-    // ========================
-    // 1. REIMBURSE
-    // ========================
     const reimbursements = await prisma.reimbursement.findMany({
       where: {
         userId: Number(userId),
@@ -51,9 +42,6 @@ export const calculatePayroll = async (req: AuthRequest, res: Response): Promise
 
     const totalIncentive = reimbursements.reduce((sum, item) => sum + Number(item.amount), 0);
 
-    // ========================
-    // 2. BONUS
-    // ========================
     const bonuses = await prisma.bonus.findMany({
       where: {
         userId: Number(userId),
@@ -63,9 +51,6 @@ export const calculatePayroll = async (req: AuthRequest, res: Response): Promise
 
     const totalBonus = bonuses.reduce((sum, item) => sum + Number(item.amount), 0);
 
-    // ========================
-    // 3. DENDA
-    // ========================
     const dendas = await prisma.denda.findMany({
       where: {
         userId: Number(userId),
@@ -75,9 +60,6 @@ export const calculatePayroll = async (req: AuthRequest, res: Response): Promise
 
     const totalDenda = dendas.reduce((sum, item) => sum + Number(item.amount), 0);
 
-    // ========================
-    // 4. TELAT
-    // ========================
     const attendances = await prisma.attendance.findMany({
       where: {
         userId: Number(userId),
@@ -99,9 +81,6 @@ export const calculatePayroll = async (req: AuthRequest, res: Response): Promise
       }
     });
 
-    // ========================
-    // 5. LEAVE (UNPAID)
-    // ========================
     const leaves = await prisma.leave.findMany({
       where: {
         userId: Number(userId),
@@ -127,18 +106,12 @@ export const calculatePayroll = async (req: AuthRequest, res: Response): Promise
       }
     });
 
-    // ========================
-    // 🔥 FIX PERHITUNGAN GAJI
-    // ========================
     const STANDARD_WORKING_DAYS = 22;
 
     const salaryPerDay = Math.floor(baseSalary / STANDARD_WORKING_DAYS);
 
     const unpaidLeaveDeduction = unpaidLeaveDays * salaryPerDay;
 
-    // ========================
-    // 7. FINAL
-    // ========================
     const netSalary =
       baseSalary +
       totalIncentive +
