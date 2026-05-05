@@ -2,7 +2,7 @@ import { type Response } from 'express';
 import prisma from '../db.js';
 import { type AuthRequest } from '../middleware/auth.js';
 
-const getWorkingDaysBetween = (start: Date, end: Date) => {
+export const getWorkingDaysBetween = (start: Date, end: Date) => {
   let count = 0;
   const date = new Date(start);
 
