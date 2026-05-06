@@ -10,7 +10,6 @@ describe('Payroll Controller - Unit Tests', () => {
       
       const totalDays = getWorkingDaysBetween(start, end);
       
-      // Kita "berharap" (expect) hasilnya adalah 5
       expect(totalDays).toBe(5);
     });
 
@@ -20,8 +19,6 @@ describe('Payroll Controller - Unit Tests', () => {
       
       const totalDays = getWorkingDaysBetween(start, end);
       
-      // Rentangnya adalah Jumat, Sabtu, Minggu, Senin (4 hari).
-      // Tapi karena Sabtu dan Minggu diabaikan, hasilnya harus 2 hari (Jumat dan Senin).
       expect(totalDays).toBe(2); 
     });
 

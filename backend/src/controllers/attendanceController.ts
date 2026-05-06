@@ -5,9 +5,34 @@ import { type AuthRequest } from '../middleware/auth.js';
 export const clockInOut = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const { type } = req.body;
-    const attendance = await prisma.attendance.create({
-      data: { userId: req.user!.id, type }
+    const userId = req.user!.id;
+
+    const todayStart = new Date();
+    todayStart.setHours(0, 0, 0, 0);
+    
+    const todayEnd = new Date();
+    todayEnd.setHours(23, 59, 59, 999);
+
+    // cek apakah user X udah absen belom
+    const existingAttendance = await prisma.attendance.findFirst({
+      where: {
+        userId: userId,
+        type: type,
+        time: {
+          gte: todayStart,
+          lte: todayEnd,
+        }
+      }
     });
+
+    if (existingAttendance) {
+      return res.status(400).json({ message: `Akses ditolak. Anda sudah melakukan absen ${type} hari ini!` });
+    }
+
+    const attendance = await prisma.attendance.create({
+      data: { userId, type }
+    });
+    
     res.status(201).json({ message: `Absen ${type} berhasil!`, data: attendance });
   } catch (error) {
     res.status(500).json({ error: String(error) });
