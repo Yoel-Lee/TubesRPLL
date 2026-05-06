@@ -37,3 +37,11 @@ export const verifyAdmin = (req: AuthRequest, res: Response, next: NextFunction)
   }
   next();
 };
+
+export const verifyAdminOrManager = (req: AuthRequest, res: Response, next: NextFunction): any => {
+  const role = req.user?.role;
+  if (role !== 'ADMIN' && role !== 'MANAGER') {
+    return res.status(403).json({ message: 'Akses ditolak. Fitur ini khusus ADMIN atau MANAGER!' });
+  }
+  next();
+};

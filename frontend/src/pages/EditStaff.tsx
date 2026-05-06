@@ -1,21 +1,40 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { User, Shield, Wallet, Phone, MapPin, Save, ArrowLeft } from 'lucide-react';
+import { User, Shield, Wallet, Phone, MapPin, Save, ArrowLeft, UserPlus } from 'lucide-react';
 import api from '../lib/api';
 
 export default function EditStaff() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
-  
+
   const [formData, setFormData] = useState({
     name: '',
     phoneNumber: '',
     address: '',
     role: 'STAFF',
     status: 'ACTIVE',
-    baseSalary: 0
+    baseSalary: 0,
+    managerId: ''
   });
+
+  const [managers, setManagers] = useState([]); // State untuk menyimpan daftar manajer
+
+  // Ambil daftar manajer saat komponen dimuat
+  useEffect(() => {
+    const fetchManagers = async () => {
+      try {
+        // Asumsi kamu punya rute API yang mengembalikan daftar user (atau bisa buat khusus untuk manager)
+        // Jika belum punya API khusus, kita ambil semua user lalu filter di frontend (hanya untuk latihan, di production sebaiknya difilter di backend)
+        const res = await api.get('/users');
+        const managerList = res.data.filter((u: any) => u.role === 'MANAGER');
+        setManagers(managerList);
+      } catch (err) {
+        console.error("Gagal mengambil data manajer");
+      }
+    };
+    fetchManagers();
+  }, []);
 
   const [email, setEmail] = useState(''); // Email biasanya tidak diedit agar tidak merusak relasi login, jadi kita pisah untuk display saja.
 
@@ -30,7 +49,8 @@ export default function EditStaff() {
           address: data.address || '',
           role: data.role || 'STAFF',
           status: data.status || 'ACTIVE',
-          baseSalary: data.baseSalary || 0
+          baseSalary: data.baseSalary || 0,
+          managerId: ''
         });
       } catch (err) {
         alert("Gagal mengambil data pegawai");
@@ -50,7 +70,7 @@ export default function EditStaff() {
         ...formData,
         baseSalary: Number(formData.baseSalary)
       };
-      
+
       await api.put(`/users/${id}`, payload);
       alert("Data staff berhasil diperbarui!");
       navigate('/manage-staff'); // Kembali ke daftar staff setelah sukses
@@ -64,7 +84,7 @@ export default function EditStaff() {
   return (
     <div className="max-w-2xl mx-auto space-y-6 animate-slide-up">
       <div className="flex items-center gap-4">
-        <button 
+        <button
           onClick={() => navigate('/manage-staff')}
           className="p-2 bg-white rounded-xl shadow-sm text-gray-400 hover:text-indigo-600 transition-all"
         >
@@ -82,34 +102,35 @@ export default function EditStaff() {
             {/* Nama Lengkap */}
             <div className="space-y-2">
               <label className="text-sm font-bold text-gray-700 flex items-center gap-2"><User size={16} /> Nama Lengkap</label>
-              <input 
+              <input
                 type="text" required
                 className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500"
                 value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
               />
             </div>
 
             {/* Nomor Telepon */}
             <div className="space-y-2">
               <label className="text-sm font-bold text-gray-700 flex items-center gap-2"><Phone size={16} /> Nomor Telepon</label>
-              <input 
+              <input
                 type="text"
                 className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500"
                 value={formData.phoneNumber}
-                onChange={(e) => setFormData({...formData, phoneNumber: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, phoneNumber: e.target.value })}
               />
             </div>
 
             {/* Role / Jabatan */}
             <div className="space-y-2">
               <label className="text-sm font-bold text-gray-700 flex items-center gap-2"><Shield size={16} /> Hak Akses (Role)</label>
-              <select 
+              <select
                 className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 font-bold"
                 value={formData.role}
-                onChange={(e) => setFormData({...formData, role: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, role: e.target.value })}
               >
                 <option value="STAFF">STAFF</option>
+                <option value="MANAGER">MANAGER</option>
                 <option value="ADMIN">ADMIN</option>
               </select>
             </div>
@@ -117,21 +138,21 @@ export default function EditStaff() {
             {/* Gaji Pokok */}
             <div className="space-y-2">
               <label className="text-sm font-bold text-gray-700 flex items-center gap-2"><Wallet size={16} /> Gaji Pokok (Rp)</label>
-              <input 
+              <input
                 type="number" required
                 className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500"
                 value={formData.baseSalary}
-                onChange={(e) => setFormData({...formData, baseSalary: Number(e.target.value)})}
+                onChange={(e) => setFormData({ ...formData, baseSalary: Number(e.target.value) })}
               />
             </div>
-            
+
             {/* Status Aktif */}
             <div className="space-y-2 md:col-span-2">
               <label className="text-sm font-bold text-gray-700 flex items-center gap-2"><Shield size={16} /> Status Akun</label>
-              <select 
+              <select
                 className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500 font-bold"
                 value={formData.status}
-                onChange={(e) => setFormData({...formData, status: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, status: e.target.value })}
               >
                 <option value="ACTIVE">AKTIF (Bisa Login)</option>
                 <option value="INACTIVE">NONAKTIF / BLOKIR</option>
@@ -142,15 +163,33 @@ export default function EditStaff() {
           {/* Alamat */}
           <div className="space-y-2">
             <label className="text-sm font-bold text-gray-700 flex items-center gap-2"><MapPin size={16} /> Alamat Domisili</label>
-            <textarea 
+            <textarea
               rows={3}
               className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500"
               value={formData.address}
-              onChange={(e) => setFormData({...formData, address: e.target.value})}
+              onChange={(e) => setFormData({ ...formData, address: e.target.value })}
             />
           </div>
 
-          <button 
+          <div className="space-y-2">
+            <label className="text-sm font-bold text-gray-700 flex items-center gap-2">
+              <UserPlus size={16} /> Atasan / Manajer
+            </label>
+            <select
+              className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500"
+              value={formData.managerId}
+              onChange={(e) => setFormData({ ...formData, managerId: e.target.value })}
+            >
+              <option value="">-- Tanpa Manajer --</option>
+              {managers.map((manager: any) => (
+                <option key={manager.id} value={manager.id}>
+                  {manager.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <button
             type="submit"
             className="w-full bg-green-600 text-white p-4 rounded-2xl font-bold flex items-center justify-center gap-2 hover:bg-green-700 transition shadow-lg shadow-green-200 mt-4"
           >

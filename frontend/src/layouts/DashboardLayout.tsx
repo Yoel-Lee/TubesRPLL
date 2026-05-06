@@ -63,13 +63,22 @@ export default function DashboardLayout() {
             <CalendarDays size={20} /> Kalender Cuti
           </Link>
 
-          {/* Menu Khusus Admin */}
-          {user.role === 'ADMIN' && (
+          {/* Menu Khusus Admin & Manager */}
+          {(user.role === 'ADMIN' || user.role === 'MANAGER') && (
             <>
-              <div className="pt-6 pb-2 text-xs font-bold text-indigo-400 uppercase tracking-widest">Admin Menu</div>
+              <div className="pt-6 pb-2 text-xs font-bold text-indigo-400 uppercase tracking-widest">
+                {user.role === 'ADMIN' ? 'Admin Menu' : 'Manager Menu'}
+              </div>
+              
               <Link to="/approvals" className="flex items-center gap-3 hover:text-indigo-300 transition">
                 <ClipboardCheck size={20} /> Approvals
               </Link>
+            </>
+          )}
+
+          {/* Menu yang BENAR-BENAR HANYA UNTUK ADMIN */}
+          {user.role === 'ADMIN' && (
+            <>
               <Link to="/activity-log" className="flex items-center gap-3 hover:text-indigo-300 transition">
                 <Activity size={20} /> Activity Log
               </Link>

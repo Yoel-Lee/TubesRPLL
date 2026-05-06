@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { UserPlus, Mail, Lock, User, Wallet, Phone, MapPin, CheckCircle2, ArrowLeft } from 'lucide-react';
 import api from '../lib/api';
@@ -12,8 +12,26 @@ export default function RegisterStaff() {
         role: 'STAFF',
         baseSalary: 0,
         phoneNumber: '',
-        address: ''
+        address: '',
+        managerId: ''
     });
+
+    const [managers, setManagers] = useState([]);
+
+    useEffect(() => {
+        const fetchManagers = async () => {
+            try {
+                // Asumsi kamu punya rute API yang mengembalikan daftar user (atau bisa buat khusus untuk manager)
+                // Jika belum punya API khusus, kita ambil semua user lalu filter di frontend (hanya untuk latihan, di production sebaiknya difilter di backend)
+                const res = await api.get('/users');
+                const managerList = res.data.filter((u: any) => u.role === 'MANAGER');
+                setManagers(managerList);
+            } catch (err) {
+                console.error("Gagal mengambil data manajer");
+            }
+        };
+        fetchManagers();
+    }, []);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -30,14 +48,14 @@ export default function RegisterStaff() {
 
         try {
             const payload = {
-                name: formData.name,         
-                email: formData.email,        
-                password: formData.password,  
-                role: formData.role,        
-                baseSalary: Number(formData.baseSalary) || 0, 
-                phoneNumber: formData.phoneNumber,             
-                address: formData.address,                     
-                managerId: null                               
+                name: formData.name,
+                email: formData.email,
+                password: formData.password,
+                role: formData.role,
+                baseSalary: Number(formData.baseSalary) || 0,
+                phoneNumber: formData.phoneNumber,
+                address: formData.address,
+                managerId: formData.managerId === '' ? null : Number(formData.managerId)
             };
 
             const response = await api.post('/users/register', payload);
@@ -52,10 +70,11 @@ export default function RegisterStaff() {
                     role: 'STAFF',
                     baseSalary: 0,
                     phoneNumber: '',
-                    address: ''
+                    address: '',
+                    managerId: ''
                 });
 
-                navigate('/manage-staff'); 
+                navigate('/manage-staff');
             }
         } catch (err: any) {
             const errorMessage = err.response?.data?.error || "Gagal mendaftarkan staff";
@@ -66,7 +85,7 @@ export default function RegisterStaff() {
     return (
         <div className="max-w-2xl mx-auto space-y-6 animate-slide-up">
             <div className="flex items-center gap-4">
-                <button 
+                <button
                     onClick={() => navigate('/manage-staff')}
                     className="p-2 bg-white rounded-xl shadow-sm text-gray-400 hover:text-indigo-600 transition-all"
                 >
@@ -156,6 +175,7 @@ export default function RegisterStaff() {
                                 onChange={(e) => setFormData({ ...formData, role: e.target.value })}
                             >
                                 <option value="STAFF">STAFF</option>
+                                <option value="MANAGER">MANAGER</option>
                                 <option value="ADMIN">ADMIN</option>
                             </select>
                         </div>
@@ -171,6 +191,24 @@ export default function RegisterStaff() {
                             value={formData.address}
                             onChange={(e) => setFormData({ ...formData, address: e.target.value })}
                         />
+                    </div>
+
+                    <div className="space-y-2">
+                        <label className="text-sm font-bold text-gray-700 flex items-center gap-2">
+                            <UserPlus size={16} /> Atasan / Manajer
+                        </label>
+                        <select
+                            className="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl outline-none focus:ring-2 focus:ring-indigo-500"
+                            value={formData.managerId}
+                            onChange={(e) => setFormData({ ...formData, managerId: e.target.value })}
+                        >
+                            <option value="">-- Tanpa Manajer --</option>
+                            {managers.map((manager: any) => (
+                                <option key={manager.id} value={manager.id}>
+                                    {manager.name}
+                                </option>
+                            ))}
+                        </select>
                     </div>
 
                     <button
