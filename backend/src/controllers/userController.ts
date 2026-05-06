@@ -47,7 +47,7 @@ export const registerStaff = async (req: AuthRequest, res: Response): Promise<an
 export const getAllUsers = async (req: Request, res: Response): Promise<any> => {
   try {
     const users = await prisma.user.findMany({
-      include: { manager: { select: { name: true } } } // Supaya kelihatan siapa manajernya
+      include: { manager: { select: { name: true } } } 
     });
     res.json(users);
   } catch (error) {

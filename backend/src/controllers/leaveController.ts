@@ -32,8 +32,7 @@ export const requestLeave = async (req: AuthRequest, res: Response): Promise<any
 export const getLeaves = async (req: AuthRequest, res: Response): Promise<any> => {
   try {
     const user = req.user;
- 
-    // 1. ADMIN melihat SEMUA cuti perusahaan
+
     if (user?.role === 'ADMIN') {
       const allLeaves = await prisma.leave.findMany({
         include: { user: { select: { name: true, email: true, managerId: true } } },
@@ -42,13 +41,12 @@ export const getLeaves = async (req: AuthRequest, res: Response): Promise<any> =
       return res.json(allLeaves);
     }
 
-    // 2. MANAGER melihat cuti miliknya SENDIRI + cuti STAFF BAWAHANNYA
     if (user?.role === 'MANAGER') {
       const managerLeaves = await prisma.leave.findMany({
         where: {
           OR: [
-            { userId: user.id }, // Cuti si Manager itu sendiri
-            { user: { managerId: user.id } } // Cuti milik staff yang managerId-nya sama dengan ID Manager ini
+            { userId: user.id },
+            { user: { managerId: user.id } } 
           ]
         },
         include: { user: { select: { name: true, email: true, managerId: true } } },
@@ -57,7 +55,6 @@ export const getLeaves = async (req: AuthRequest, res: Response): Promise<any> =
       return res.json(managerLeaves);
     }
 
-    // 3. STAFF hanya melihat cutinya sendiri
     const myLeaves = await prisma.leave.findMany({
       where: { userId: user!.id },
       orderBy: { startDate: 'desc' }
@@ -75,19 +72,16 @@ export const updateLeaveStatus = async (req: AuthRequest, res: Response): Promis
     const { status, isPaid } = req.body; 
     const currentUser = req.user!;
 
-    // 1. CEK DATA CUTI DAN PEMILIKNYA TERLEBIH DAHULU
     const targetLeave = await prisma.leave.findUnique({
       where: { id: Number(id) },
-      include: { user: true } // Tarik juga data user yang mengajukan cuti
+      include: { user: true } 
     });
 
     if (!targetLeave) {
       return res.status(404).json({ message: "Cuti tidak ditemukan" });
     }
 
-    // 2. LOGIKA VALIDASI KEAMANAN MANAGER
     if (currentUser.role === 'MANAGER') {
-      // Jika Manager mencoba menyetujui cuti staff yang managerId-nya bukan dirinya
       if (targetLeave.user.managerId !== currentUser.id) {
          return res.status(403).json({ 
            message: "Akses ditolak! Anda tidak berhak mengubah status cuti dari staff divisi lain." 
@@ -95,7 +89,6 @@ export const updateLeaveStatus = async (req: AuthRequest, res: Response): Promis
       }
     }
 
-    // 3. JIKA LOLOS VALIDASI, UPDATE STATUSNYA
     const updatedLeave = await prisma.leave.update({
       where: { id: Number(id) },
       data: { 

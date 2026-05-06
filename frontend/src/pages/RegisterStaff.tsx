@@ -21,8 +21,6 @@ export default function RegisterStaff() {
     useEffect(() => {
         const fetchManagers = async () => {
             try {
-                // Asumsi kamu punya rute API yang mengembalikan daftar user (atau bisa buat khusus untuk manager)
-                // Jika belum punya API khusus, kita ambil semua user lalu filter di frontend (hanya untuk latihan, di production sebaiknya difilter di backend)
                 const res = await api.get('/users');
                 const managerList = res.data.filter((u: any) => u.role === 'MANAGER');
                 setManagers(managerList);
