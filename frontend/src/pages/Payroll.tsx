@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { DollarSign, User as UserIcon, Calculator, AlertCircle, Receipt } from 'lucide-react';
+import { Calculator, AlertCircle, Receipt } from 'lucide-react';
 import api from '../lib/api';
 
 interface PayrollData {

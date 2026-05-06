@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { User as UserIcon, ChevronRight, ChevronDown, Network } from 'lucide-react';
+import { ChevronRight, ChevronDown, Network } from 'lucide-react';
 import api from '../lib/api';
 
 // --- KOMPONEN REKURSIF UNTUK MENGGAMBAR CABANG POHON ---

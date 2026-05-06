@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Edit3, Search, Calendar, CheckCircle2 } from 'lucide-react';
+import { Edit3, CheckCircle2 } from 'lucide-react';
 import api from '../lib/api';
 
 export default function ManageAttendance() {
